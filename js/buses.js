@@ -4693,7 +4693,7 @@ var Buses = {
 			   },
 			   "23":{
 				  "routeno":"155",
-				  "from":"MountLavinia",
+				  "from":"Mount Lavinia",
 				  "to":"Mattakkuliya",
 				  "stopsfrom":[
 					 {

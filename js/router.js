@@ -24,10 +24,27 @@ var Router = {
 		if(commonGroup.length > 0) {
 			console.log('Single bus group found! Opts: ' + commonGroup.length);
 			_.forEach(commonGroup, function(groupid) { 
-				result.routes.push({buses		: Router.renderOneBusRouteDetail(pid1, pid2, groupid),
-									changeovers	: [] }); 
+				result.routes.push({	buses		: Router.renderOneBusRouteDetail(pid1, pid2, groupid),
+										changeovers	: [] }); 
 			});
-		}				
+		}
+		else {
+			/** two bus territory */
+			var commonStops = [], bus1, bus2;
+			for(var i = 0; i < pid1Groups.length; i++) {
+				for(var j = 0; j < pid2Groups.length; j++) {
+					commonStops = _.intersection(Buses.groups[pid1Groups[i]].stops, Buses.groups[pid2Groups[j]].stops);
+					_.forEach(commonStops, function(stop) { 
+						bus1 = Router.renderOneBusRouteDetail(pid1, stop, pid1Groups[i]);
+						bus2 = Router.renderOneBusRouteDetail(stop, pid2, pid2Groups[j]);
+						if(bus1.length > 0 && bus2.length > 0) {
+							result.routes.push({	buses		: [bus1, bus2],
+													changeovers	: [stop] }); 
+						}
+					});
+				}
+			}
+		}			
 		/*
 		var commonBus = _.intersection(pid1Buses, pid2Buses);
 		
