@@ -47,43 +47,37 @@ var Router = {
 					});
 				}
 			}
-		}			
-		/*
-		var commonBus = _.intersection(pid1Buses, pid2Buses);
-		
-		if(commonBus.length > 0) {
-			console.log('Single bus routes found! Opts: ' + commonBus.length);
-			_.forEach(commonBus, function(bid) { 
-				result.routes.push(Router.renderOneBusRouteDetail(pid1, pid2, bid)); 
-			});
-		}
-		else {
-			var commonStops = [], _comStop = [];
 			
-			for(var i = 0; i < pid1Buses.length; i++) {
-				for(var j = 0; j < pid2Buses.length; j++) {
-					var pid1BusStops = _.pluck(Buses.routes[pid1Buses[i]].stops, 'pid');
-					var pid2BusStops = _.pluck(Buses.routes[pid2Buses[j]].stops, 'pid');
-					
-					_comStop = _.intersection(pid1BusStops, pid2BusStops);
-					
-					if(_comStop.length > 0) {
-						commonStops.push({bus1: pid1Buses[i], bus2: pid2Buses[j], ids: _.clone(_comStop) });
+			if(result.routes.length < 2) {
+			
+				/** and three bus */
+				var commonStops1 = [], commonStops2 = [];
+				for(var key in Buses.groups) {
+					for(var i = 0; i < pid1Groups.length; i++) {
+						for(var j = 0; j < pid2Groups.length; j++) {
+							if(pid1Groups[i] != pid2Groups[j] && Buses.groups[key] != pid1Groups[i]) {
+								commonStops1 = _.intersection(Buses.groups[pid1Groups[i]].stops, Buses.groups[key].stops);
+								commonStops2 = _.intersection(Buses.groups[pid2Groups[j]].stops, Buses.groups[key].stops);
+								for(var k = 0; k < commonStops1.length; k++) {
+									for(var l = 0; l < commonStops2.length; l++) {
+										bus1 = Router.renderRouteDetail(pid1, 				commonStops1[k], 	pid1Groups[i]);
+										bus2 = Router.renderRouteDetail(commonStops1[k], 	commonStops2[l], 	key);
+										bus3 = Router.renderRouteDetail(commonStops2[l], 	pid2, 				pid2Groups[j]);
+										if(bus1.length > 0 && bus2.length > 0 && bus3.length > 0 && commonStops1[k] != commonStops2[l]) {
+											result.routes.push({	buses		: [bus1, bus2, bus3],
+																	dist		: _.max(_.pluck(bus1, 'dist')) + _.max(_.pluck(bus2, 'dist'))  + _.max(_.pluck(bus3, 'dist')),
+																	changeovers	: [Router.getPlaceDetail(commonStops1[k]), Router.getPlaceDetail(commonStops2[l])] }); 
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			}
-			
-			commonStops = _.uniq(commonStops);
-			if(commonStops.length > 0) {
-				console.log('Two bus routes found! Opts: ' + commonStops.length);
-				_.forEach(commonStops, function(stop) { 
-					result.routes.push(Router.renderRouteDetail(pid1, pid2, stop));
-				});
-			}
 		}
-		*/
 		
-		result.routes = _.sortBy(result.routes, function(r) { return r.dist; });
+		result.routes = _.sortBy(result.routes, function(r) { return r.dist; }).splice(0, 30);
 		return result;
 	},
 	
