@@ -20,11 +20,13 @@ var Router = {
 							to		: Router.getPlaceDetail(pid2),
 							routes	: [] };
 							
-		var commonGroup = _.intersection(pid1Groups, pid2Groups);
+		var commonGroup = _.intersection(pid1Groups, pid2Groups), bus;
 		if(commonGroup.length > 0) {
 			console.log('Single bus group found! Opts: ' + commonGroup.length);
-			_.forEach(commonGroup, function(groupid) { 
-				result.routes.push({	buses		: Router.renderOneBusRouteDetail(pid1, pid2, groupid),
+			_.forEach(commonGroup, function(groupid) {
+				bus = Router.renderRouteDetail(pid1, pid2, groupid); 
+				result.routes.push({	buses		: [bus],
+										dist		: _.max(_.pluck(bus, 'dist')),
 										changeovers	: [] }); 
 			});
 		}
@@ -35,11 +37,12 @@ var Router = {
 				for(var j = 0; j < pid2Groups.length; j++) {
 					commonStops = _.intersection(Buses.groups[pid1Groups[i]].stops, Buses.groups[pid2Groups[j]].stops);
 					_.forEach(commonStops, function(stop) { 
-						bus1 = Router.renderOneBusRouteDetail(pid1, stop, pid1Groups[i]);
-						bus2 = Router.renderOneBusRouteDetail(stop, pid2, pid2Groups[j]);
+						bus1 = Router.renderRouteDetail(pid1, stop, pid1Groups[i]);
+						bus2 = Router.renderRouteDetail(stop, pid2, pid2Groups[j]);
 						if(bus1.length > 0 && bus2.length > 0) {
 							result.routes.push({	buses		: [bus1, bus2],
-													changeovers	: [stop] }); 
+													dist		: _.max(_.pluck(bus1, 'dist')) + _.max(_.pluck(bus2, 'dist')),
+													changeovers	: [Router.getPlaceDetail(stop)] }); 
 						}
 					});
 				}
@@ -80,10 +83,11 @@ var Router = {
 		}
 		*/
 		
+		result.routes = _.sortBy(result.routes, function(r) { return r.dist; });
 		return result;
 	},
 	
-	renderOneBusRouteDetail: function(pid1, pid2, groupid) {
+	renderRouteDetail: function(pid1, pid2, groupid) {
 
 		var routeid, routestops, pid1match, pid2match, routes = [];
 		
@@ -95,7 +99,7 @@ var Router = {
 				pid1match = _.find(Buses.routes[routeid].stopsfrom, { 'pid': pid1 });
 				pid2match = _.find(Buses.routes[routeid].stopsfrom, { 'pid': pid2 });
 				if(pid1match && pid2match && pid1match.dist <= pid2match.dist) {
-					routes.push(Router.renderBusDetail(routeid));
+					routes.push(Router.renderBusDetail(routeid, (pid2match.dist - pid1match.dist)));
 				}
 			}
 			
@@ -106,38 +110,21 @@ var Router = {
 				pid2match = _.find(Buses.routes[routeid].stopsto, { 'pid': pid2 });
 				if(pid1match && pid2match && pid1match.dist <= pid2match.dist) {
 					/** tell render function that travel direction is reversed */
-					routes.push(Router.renderBusDetail(routeid, true)); 
+					routes.push(Router.renderBusDetail(routeid, (pid2match.dist - pid1match.dist), true)); 
 				}
 			}	
 		}	
 		
 		return routes;
-		
-					//verbose		: 'Take the ' + Router.renderBusDetail(busid, 'detailed') + ' at ' + Buses.places[pid1].name +
-									//'. Get down at ' + Buses.places[pid2].name };
 	},
 	
-	renderRouteDetail: function(pid1, pid2, stop) {
-		var names = [], places = [];
-		for(var i = 0; i < stop.ids.length; i++) {
-			names.push(Buses.places[stop.ids[i]].name);
-			places.push(Router.getPlaceDetail(stop.ids[i]));
-		}
-		
-		return { 	buses		: [Router.renderBusDetail(stop.bus1, 'json'), Router.renderBusDetail(stop.bus2, 'json')],
-					changeovers	: places,
-					verbose		: 'Take the ' + Router.renderBusDetail(stop.bus1, 'detailed') + ' at ' + Buses.places[pid1].name +
-									'. Get down at ' + names.join(' or ') +
-									'. Take ' +  Router.renderBusDetail(stop.bus2, 'detailed') + ' to ' + Buses.places[pid2].name };
-	},
-	
-	renderBusDetail: function(bid, reverse) {
+	renderBusDetail: function(bid, distance, reverse) {
 		/* bus only travels this way when returning, not on original journey */
 		if(reverse) {
-			return { routeno: Buses.routes[bid].routeno, from: Buses.routes[bid].to, to: Buses.routes[bid].from };
+			return { routeno: Buses.routes[bid].routeno, from: Buses.routes[bid].to, to: Buses.routes[bid].from, dist: distance };
 		}
 		else {
-			return { routeno: Buses.routes[bid].routeno, from: Buses.routes[bid].from, to: Buses.routes[bid].to };
+			return { routeno: Buses.routes[bid].routeno, from: Buses.routes[bid].from, to: Buses.routes[bid].to, dist: distance };
 		}
 	},
 	
