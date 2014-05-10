@@ -1,5 +1,5 @@
 var Router = {
-	findRoute: function(pid1, pid2) {
+	findRoutes: function(pid1, pid2) {
 		if(pid1 == pid2) return;
 		
 		var pid1Groups = [], pid2Groups = [];
@@ -77,7 +77,7 @@ var Router = {
 			}
 		}
 		
-		result.routes = _.sortBy(result.routes, function(r) { return r.dist; }).splice(0, 30);
+		result.routes = _.sortBy(result.routes, function(r) { return r.dist; }).slice(0, 30);
 		return result;
 	},
 	

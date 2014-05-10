@@ -1,9 +1,34 @@
+<!DOCTYPE html>
 <html>
 <head>
-<script src="js/lodash.min.js"></script>
-<script src="js/buses.js"></script>
-<script src="js/router.js"></script>
+	<meta charset="utf-8">
+	<title>Colombo Bus Route Finder</title>
+	<meta name="viewport" content="user-scalable=no,initial-scale=1,width=device-width,height=device-height,maximum-scale=1">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+	<link rel="stylesheet" href="ratchet/css/ratchet.min.css">
+	<link rel="stylesheet" href="ratchet/css/ratchet-theme-ios.min.css">
+	<style>
+	#busform { margin: 15px; }
+	</style>
+	<script type="text/javascript" src="ratchet/js/ratchet.min.js"></script>
+	<script type="text/javascript" src="js/lodash.min.js"></script>
+	<script type="text/javascript" src="js/buses.js"></script>
+	<script type="text/javascript" src="js/router.js"></script>
+	<script type="text/javascript" src="js/display.js"></script>
 </head>
 
-<body></body>
+<body>
+	<div class="content" id="content">
+		<form id="busform" action="#" onsubmit="Display.getBuses()">
+			<input id="splace" type="text" placeholder="Start">
+			<input id="dplace" type="text" placeholder="Destination">
+			
+			<button class="btn btn-positive btn-block">Find A Bus!</button>
+		</form>
+		
+		<ul id="routes" class="table-view"></ul>
+	</div>
+</body>
 </html>
