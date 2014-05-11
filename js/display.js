@@ -6,13 +6,18 @@ var Display = {
 		if(splace != '' && dplace != '') {
 			var output = '', routes = Router.findRoutes(splace, dplace);
 			output += '<li class="table-view-divider">Start</li><li class="table-view-cell">' +
-			'<a class="navigate-right">' + routes.from.name + '</a></li>' + 
+			'<a href="viewer.html"  data-transition="slide-in" class="navigate-right">' + routes.from.name + '</a></li>' + 
 			'<li class="table-view-divider">Buses</li>';
 			
 			for(var i = 0; i < Math.min(5, routes.routes.length); i++) {
-				output += '<li class="table-view-cell"><a class="navigate-right">' +
-				'<span class="badge">' + (routes.routes[i].dist/1000).toFixed(2) + ' km</span><ul>' + 
+				output += '<li class="table-view-cell"><a class="navigate-right"><ul>' + 
 				Display.renderVerboseDetail(routes.routes[i], splace, dplace) + '</ul></a></li>';
+			}
+			
+			if(routes.routes.length > 5) {
+				output += '<li class="table-view-cell media"><a class="navigate-right">' +
+				'<span class="media-object pull-left icon icon-more"></span>' +
+				'<div class="media-body">' + (routes.routes.length - 1) + ' More Buses</div></a></li>';
 			}
 			
 			output += '<li class="table-view-divider">End</li><li class="table-view-cell">' +
