@@ -6,6 +6,13 @@ JS rewrite of bus route finder ~~with lots of goodies~~
 Currently in preliminary development, so these are subject to change
 without notice.
 
+## Demo
+
+[There's a demo here](http://janithl.github.io/Bus-Route-Finder-3.0/). You 
+have to turn on touch event emulation on Chrome to access the modal screens.
+
+## API
+
 Calling `Router.findRoutes()` with two integers will return a Javascript
 object like this:
 
