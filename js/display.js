@@ -6,7 +6,7 @@ var Display = {
 		if(splace != '' && dplace != '') {
 			var output = '', routes = Router.findRoutes(splace, dplace);
 			output += '<li class="table-view-divider">Start</li><li class="table-view-cell">' +
-			'<a href="viewer.html"  data-transition="slide-in" class="navigate-right">' + routes.from.name + '</a></li>' + 
+			'<a href="#start-modal" class="navigate-right">' + routes.from.name + '</a></li>' + 
 			'<li class="table-view-divider">Buses</li>';
 			
 			for(var i = 0; i < Math.min(5, routes.routes.length); i++) {
@@ -21,9 +21,21 @@ var Display = {
 			}
 			
 			output += '<li class="table-view-divider">End</li><li class="table-view-cell">' +
-			'<a class="navigate-right">' + routes.to.name + '</a></li>';
+			'<a href="#destination-modal" class="navigate-right">' + routes.to.name + '</a></li>';
 			
 			document.getElementById('routes').innerHTML = output;
+			
+			document.getElementById('start-modal-title').innerHTML = routes.from.name;
+			document.getElementById('start-modal-content').innerHTML =
+			'<img src="http://maps.googleapis.com/maps/api/staticmap?center=' + routes.from.lat + ',' + routes.from.lng + 
+			'&zoom=15&size=' + window.innerWidth + 'x' + window.innerWidth + '&maptype=roadmap' + 
+			'&markers=color:red%7Clabel:S%7C' + routes.from.lat + ',' + routes.from.lng + '&sensor=false">';
+			
+			document.getElementById('destination-modal-title').innerHTML = routes.to.name;
+			document.getElementById('destination-modal-content').innerHTML =
+			'<img src="http://maps.googleapis.com/maps/api/staticmap?center=' + routes.to.lat + ',' + routes.to.lng + 
+			'&zoom=15&size=' + window.innerWidth + 'x' + window.innerWidth + '&maptype=roadmap' + 
+			'&markers=color:red%7Clabel:S%7C' + routes.to.lat + ',' + routes.to.lng + '&sensor=false">';
 		}
 		else {
 			console.log('nei');

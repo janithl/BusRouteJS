@@ -21,7 +21,7 @@
 
 <body>
 	<div class="content" id="content">
-		<form id="busform" action="#" onsubmit="Display.getBuses()">
+		<form id="busform" action="#" onsubmit="Display.getBuses(); return false;">
 			<input id="splace" type="text" placeholder="Start">
 			<input id="dplace" type="text" placeholder="Destination">
 			
@@ -29,6 +29,24 @@
 		</form>
 		
 		<ul id="routes" class="table-view"></ul>
+	</div>
+	
+	<div id="start-modal" class="modal">
+		<header class="bar bar-nav">
+			<a class="icon icon-close pull-right" href="#start-modal"></a>
+			<h1 id="start-modal-title" class="title">Start</h1>
+		</header>
+
+		<div class="content" id="start-modal-content"></div>
+	</div>
+	
+	<div id="destination-modal" class="modal">
+		<header class="bar bar-nav">
+			<a class="icon icon-close pull-right" href="#destination-modal"></a>
+			<h1 id="destination-modal-title" class="title">Destination</h1>
+		</header>
+
+		<div class="content" id="destination-modal-content"></div>
 	</div>
 </body>
 </html>
