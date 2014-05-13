@@ -1,9 +1,12 @@
 var Display = {
 	getBuses: function(e) {
-		var splace = parseInt(document.getElementById('splace').value.replace(/\s/g, ''));
-		var dplace = parseInt(document.getElementById('dplace').value.replace(/\s/g, ''));
+		var splace = document.getElementById('splace').value.replace(/\s/g, '');
+		var dplace = document.getElementById('dplace').value.replace(/\s/g, '');
 		
-		if(splace != '' && dplace != '') {
+		splace = isNaN(splace) ? parseInt(Router.getPlaceId(splace)) : parseInt(splace);
+		dplace = isNaN(dplace) ? parseInt(Router.getPlaceId(dplace)) : parseInt(dplace);
+		
+		if(splace != '' && dplace != '' && !isNaN(splace) && !isNaN(dplace)) {
 			var output = '', routes = Router.findRoutes(splace, dplace);
 			output += '<li class="table-view-divider">Start</li><li class="table-view-cell">' +
 			'<a href="#start-modal" class="navigate-right">' + routes.from.name + '</a></li>' + 
@@ -38,7 +41,8 @@ var Display = {
 			'&markers=color:red%7Clabel:S%7C' + routes.to.lat + ',' + routes.to.lng + '&sensor=false">';
 		}
 		else {
-			console.log('nei');
+			document.getElementById('routes').innerHTML = '<li class="table-view-cell media">' +
+			'<span class="media-object pull-left icon icon-close"></span> <div class="media-body">Error in Input</div></li>';
 		}
 		
 		return false;

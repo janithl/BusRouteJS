@@ -124,5 +124,9 @@ var Router = {
 	
 	getPlaceDetail: function(pid) {
 		return { name: Buses.places[pid].name, lat: Buses.places[pid].lat, lng: Buses.places[pid].lon };
+	},
+	
+	getPlaceId: function(name) {
+		return _.findKey(Buses.places, function(place) { return place.name.toLowerCase().match(name.toLowerCase()); }) || '';
 	}
 };
