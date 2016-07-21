@@ -97,13 +97,20 @@ Router.prototype.findRoutes = function(from, to) {
 	var singleRoute = this.findSingleRoutes(from, to);
 
 	if(singleRoute.length > 0) {
-		return {
+		singleRoute = singleRoute.sort(function(a, b) {
+			return a.distance - b.distance;
+		});
+
+		var distance = this.getDistance(singleRoute[0], from, to);
+		return [{
 			from 	: from,
-			routes 	: singleRoute,
+			routes 	: [
+				{ routes: singleRoute.slice(0, 10), distance: distance }
+			],
 			changes : [],
 			to 		: to,
-			distance: this.getDistance(singleRoute[0], from, to)
-		};
+			distance: distance
+		}];
 	}
 	else {
 		/** 
@@ -179,7 +186,9 @@ Router.prototype.findRoutes = function(from, to) {
 		}
 
 		if(multiRoutes.length > 0) {
-			multiRoutes.sort(function(a, b) {
+			multiRoutes = multiRoutes.filter(function(n) { 
+				return !Number.isNaN(n.distance); 
+			}).sort(function(a, b) {
 				return a.distance - b.distance;
 			});
 			return multiRoutes.slice(0, 10);
