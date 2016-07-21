@@ -1,21 +1,27 @@
 var Router = function () {
-    this.buses = Buses;
+    this.buses 		= Buses;
+    this.penalty 	= 1000; /** 1km penalty for changing buses */ 
+};
+
+Router.prototype.unique = function(array) {
+	return array.filter(function(item, pos) {
+		return array.indexOf(item) == pos;
+	});
 };
 
 /** stolen off http://stackoverflow.com/a/1885569 */
 Router.prototype.intersect = function(array1, array2) {
-	return array1.filter(function(n) {
+	return this.unique(array1.filter(function(n) {
 		return array2.indexOf(n) != -1;
-	});
-};
-
-/** sort array by distance */
-Router.prototype.sortByDistance = function(a, b) {
-	return a.distance - b.distance;
+	}));
 };
 
 /** get distance from start node to end node on a route */
 Router.prototype.getDistance = function(route, from, to) {
+	if(!this.buses.routes.hasOwnProperty(route)) {
+		return 1/0;
+	}
+
 	return Math.max(this.buses.routes[route].stopsfrom[to] - this.buses.routes[route].stopsfrom[from],
 		this.buses.routes[route].stopsto[to] - this.buses.routes[route].stopsto[from]);
 };
@@ -25,15 +31,17 @@ Router.prototype.getDistance = function(route, from, to) {
 	distance of the end node should be greater than the start node
 */
 Router.prototype.reachable = function(route, from, to) {
-	return this.buses.routes[route].stopsfrom[to] > this.buses.routes[route].stopsfrom[from] ||
-		this.buses.routes[route].stopsto[to] > this.buses.routes[route].stopsto[from];
+	return this.buses.routes.hasOwnProperty(route) && 
+		(this.buses.routes[route].stopsfrom[to] > this.buses.routes[route].stopsfrom[from] ||
+		this.buses.routes[route].stopsto[to] > this.buses.routes[route].stopsto[from]);
 };
 
 
 /** find stops that can be reached from a given stop on a given route */
 Router.prototype.findReachableStops = function(route, stop) {
 	var stops = [];
-	if(this.buses.routes[route].stopsfrom.hasOwnProperty(stop)) {
+	if(this.buses.routes.hasOwnProperty(route) && 
+	this.buses.routes[route].stopsfrom.hasOwnProperty(stop)) {
 		var startdist = this.buses.routes[route].stopsfrom[stop];
 		for(var s in this.buses.routes[route].stopsfrom) {
 			if(this.buses.routes[route].stopsfrom[s] > startdist) {
@@ -42,7 +50,8 @@ Router.prototype.findReachableStops = function(route, stop) {
 		}
 	}
 
-	if(this.buses.routes[route].stopsto.hasOwnProperty(stop)) {
+	if(this.buses.routes.hasOwnProperty(route) && 
+	this.buses.routes[route].stopsto.hasOwnProperty(stop)) {
 		var startdist = this.buses.routes[route].stopsto[stop];
 		for(var s in this.buses.routes[route].stopsto) {
 			if(this.buses.routes[route].stopsto[s] > startdist) {
@@ -51,7 +60,7 @@ Router.prototype.findReachableStops = function(route, stop) {
 		}
 	}
 
-	return stops;
+	return this.unique(stops);
 };
 
 /** find routes that pass through the given stop */
@@ -64,7 +73,7 @@ Router.prototype.findStopRoutes = function(stop) {
 		}
 	}
 
-	return routes;
+	return this.unique(routes);
 };
 
 /** find single bus routes between two nodes */
@@ -74,8 +83,7 @@ Router.prototype.findSingleRoutes = function(from, to) {
 	var fromRoutes 	= this.findStopRoutes(from); /** bus routes passing through start node */
 	var toRoutes 	= this.findStopRoutes(to); /** bus routes passing through end node */	
 
-	return this.intersect(fromRoutes, toRoutes)
-		.filter(function(r) { return _self.reachable(r, from, to); });
+	return this.intersect(fromRoutes, toRoutes).filter(function(r) { return _self.reachable(r, from, to); });
 };
 
 /** find routes between two nodes */
@@ -91,8 +99,9 @@ Router.prototype.findRoutes = function(from, to) {
 	if(singleRoute.length > 0) {
 		return {
 			from 	: from,
-			to 		: to,
 			routes 	: singleRoute,
+			changes : [],
+			to 		: to,
 			distance: this.getDistance(singleRoute[0], from, to)
 		};
 	}
@@ -101,7 +110,7 @@ Router.prototype.findRoutes = function(from, to) {
 			if not found, try to find reachable nodes from the first route, and 
 			from the second route, and any intersecting stops 
 		*/
-		var fromStops = [], toStops = [], toc, fromc, distances, doubleRoutes = [], _self = this;
+		var fromStops = [], toStops = [], toc, fromc, distances, multiRoutes = [], _self = this;
 		fromRoutes.forEach(function(fr) {
 			fromStops = fromStops.concat(_self.findReachableStops(fr, from));
 		});
@@ -111,7 +120,7 @@ Router.prototype.findRoutes = function(from, to) {
 		});
 
 		/** 
-			find intersecting stops, and routes to take you from your starting node 
+			2 bus: find intersecting stops, and routes to take you from your starting node 
 			to your intersection, and from the intersection to the end stop
 		*/
 		common = this.intersect(fromStops, toStops);
@@ -123,24 +132,65 @@ Router.prototype.findRoutes = function(from, to) {
 				_self.getDistance(fromc[0], c, to)
 			];
 
-			doubleRoutes.push({
+			multiRoutes.push({
 				from 	: from,
 				routes 	: [
 					{ routes: toc, 		distance: distances[0] },
 					{ routes: fromc, 	distance: distances[1] }
 				],
-				change 	: c,
+				changes : [c],
 				to 		: to,
 				distance: distances[0] + distances[1]
 			});
 		});
 
-		if(doubleRoutes.length > 0) {
-			return doubleRoutes.sort(this.sortByDistance)
+		if(common.length < 3) {
+			/** 
+				3 bus: find reachable stops from start and end nodes, and find 
+				routes connecting some nodes within those two sets
+			*/
+			fromStops.forEach(function(fs) {
+				toStops.forEach(function(ts) {
+					tots	= _self.findSingleRoutes(fs, ts);
+					if(tots.length > 0) {
+						tofs	= _self.findSingleRoutes(from, fs);
+						fromts 	= _self.findSingleRoutes(ts, to);
+
+						distances 	= [
+							_self.getDistance(tofs[0], from, fs),
+							_self.getDistance(tots[0], fs, ts),
+							_self.getDistance(fromts[0], ts, to)
+						];
+
+						multiRoutes.push({
+							from 	: from,
+							routes 	: [
+								{ routes: tofs, 	distance: distances[0] },
+								{ routes: tots, 	distance: distances[1] },
+								{ routes: fromts, 	distance: distances[2] }
+							],
+							changes : [fs, ts],
+							to 		: to,
+							distance: distances[0] + distances[1] + distances[2]
+						});
+					}
+				});
+			});
+		}
+
+		if(multiRoutes.length > 0) {
+			multiRoutes.sort(function(a, b) {
+				return a.distance - b.distance;
+			});
+			return multiRoutes.slice(0, 10);
 		}
 	}
 };
 
 Router.prototype.getPlaceDetails = function(pid) {
 	return this.buses.places[pid];
+};
+
+Router.prototype.getRouteDetails = function(id) {
+	return this.buses.routes[id];
 };
