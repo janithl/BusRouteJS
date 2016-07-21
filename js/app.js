@@ -4,12 +4,12 @@ function findRoutes() {
     var buses = router.findRoutes(document.getElementById('source').value, document.getElementById('destination').value);
 
 
-    document.getElementById('output').innerHTML = buses.map(function(b) {
-        return renderOption(b);
+    document.getElementById('output').innerHTML = buses.map(function(b, index) {
+        return renderOption(b, index);
     }).join('\n');
 }
 
-function renderOption(route) {
+function renderOption(route, index) {
     var output;
     if(route.changes.length == 0) {
         output = renderRoute(route.from, route.to, route.distance, route.routes[0].routes);
@@ -31,9 +31,10 @@ function renderOption(route) {
         '</div>';
     }
 
-    return '<div class="panel panel-default"><div class="panel-body row">' + 
-        output + '</div><div class="panel-footer text-center">' + 
-        'Total Distance: <strong>' + (route.distance / 1000.0).toFixed(2) + 'km </strong></div></div>';
+    return (index == 0 ? ('<div class="panel panel-warning"><div class="panel-heading"><h3 class="panel-title">' + 
+        'Shortest Route</h3></div>') : '<div class="panel panel-default">') + '<div class="panel-body row">' + 
+        output + '</div><div class="panel-footer text-center">Total Distance: <strong>' + 
+        (route.distance / 1000.0).toFixed(2) + 'km </strong></div></div>';
 }
 
 function renderRoute(from, to, distance, buses) {
