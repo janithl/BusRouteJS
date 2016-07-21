@@ -5,28 +5,53 @@ function findRoutes() {
 
 
     document.getElementById('output').innerHTML = buses.map(function(b) {
-        return renderRoute(b);
+        return renderOption(b);
     }).join('\n');
 }
 
-function renderRoute(route) {
-    var from    = router.getPlaceDetails(route.from);
-    var to      = router.getPlaceDetails(route.to);
+function renderOption(route) {
+    var output;
+    if(route.changes.length == 0) {
+        output = renderRoute(route.from, route.to, route.distance, route.routes[0].routes);
+    }
+    else if(route.changes.length == 1) {
+        output = '<div class="col-xs-6">' + 
+            renderRoute(route.from, route.changes[0], route.routes[0].distance, route.routes[0].routes) + 
+        '</div><div class="col-xs-6">' +
+            renderRoute(route.changes[0], route.to, route.routes[1].distance, route.routes[1].routes) + 
+        '</div>';
+    }
+    else if(route.changes.length == 2) {
+        output = '<div class="col-xs-4">' + 
+            renderRoute(route.from, route.changes[0], route.routes[0].distance, route.routes[0].routes) + 
+        '</div><div class="col-xs-4">' +
+            renderRoute(route.changes[0], route.changes[1], route.routes[1].distance, route.routes[1].routes) +
+        '</div><div class="col-xs-4">' +
+            renderRoute(route.changes[1], route.to, route.routes[2].distance, route.routes[2].routes) + 
+        '</div>';
+    }
+
+    return '<div class="panel panel-default"><div class="panel-body row">' + 
+        output + '</div><div class="panel-footer text-center">' + 
+        'Total Distance: <strong>' + (route.distance / 1000.0).toFixed(2) + 'km </strong></div></div>';
+}
+
+function renderRoute(from, to, distance, buses) {
+    var from    = router.getPlaceDetails(from);
+    var to      = router.getPlaceDetails(to);
 
     var details;
-    var buses   = route.routes.map(function(r) {
-        return r.routes.map(function(rr) {
-            details = router.getRouteDetails(rr);
-            if(details) {
-                return '<a href="#" class="list-group-item">Route #' + details.routeno +
-                        ' (' + details.from + ' - ' + details.to + ')</a>';
-            }
-        }).join('\n');
+    var busmarkup = buses.map(function(r) {
+        details = router.getRouteDetails(r);
+        if(details) {
+            return '<a href="#" class="list-group-item"><strong>#' + details.routeno +
+                    '</strong> (' + details.from + ' - ' + details.to + ')</a>';
+        }
     }).join('\n');
 
     return '<div class="panel panel-primary">' + 
         '<div class="panel-heading"><h3 class="panel-title">' + 
-            from.name + ' to ' + to.name + ' (' + route.distance + 'm)' +
+            from.name + ' to ' + to.name + ' (' + (distance / 1000.0).toFixed(2) + 'km)' +
         '</h3></div>' + 
-        '<div class="panel-body"><div class="list-group">' + buses + '</div></div></div>';
+        '<div class="list-group">' + busmarkup + '</div></div>';
 }
