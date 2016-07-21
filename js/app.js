@@ -1,4 +1,4 @@
-var router = new Router();
+var map, router = new Router();
 
 function findRoutes() {
     var buses = router.findRoutes(document.getElementById('source').value, document.getElementById('destination').value);
@@ -51,7 +51,30 @@ function renderRoute(from, to, distance, buses) {
 
     return '<div class="panel panel-primary">' + 
         '<div class="panel-heading"><h3 class="panel-title">' + 
-            from.name + ' to ' + to.name + ' (' + (distance / 1000.0).toFixed(2) + 'km)' +
-        '</h3></div>' + 
+        '<a href="#" data-lat="' + from.lat + '" data-lon="' + from.lon + '" data-toggle="modal" data-target="#map-modal">' + 
+        from.name + '</a> to <a href="#" data-lat="' + to.lat + '" data-lon="' + to.lon + '" data-toggle="modal" data-target="#map-modal">' + 
+        to.name + '</a> (' + (distance / 1000.0).toFixed(2) + 'km)</h3></div>' + 
         '<div class="list-group">' + busmarkup + '</div></div>';
 }
+
+/** Google Map code stolen off http://stackoverflow.com/a/26410438 */
+function initMap(myCenter) {
+    var marker = new google.maps.Marker({
+        position: myCenter
+    });
+
+    var mapProp = {
+        center: myCenter,
+        zoom: 16,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    map = new google.maps.Map(document.getElementById('map-canvas'), mapProp);
+    marker.setMap(map);
+};
+
+$('#map-modal').on('shown.bs.modal', function(e) {
+    var element = $(e.relatedTarget);
+    initMap(new google.maps.LatLng(element.data('lat'), element.data('lon')));
+    $('#map-title').html(element.html());
+});

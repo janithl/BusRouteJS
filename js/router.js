@@ -3,6 +3,7 @@ var Router = function () {
     this.penalty 	= 1000; /** 1km penalty for changing buses */ 
 };
 
+/** stolen off http://stackoverflow.com/a/14438954 */
 Router.prototype.unique = function(array) {
 	return array.filter(function(item, pos) {
 		return array.indexOf(item) == pos;
