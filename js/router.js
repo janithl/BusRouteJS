@@ -89,19 +89,19 @@ Router.prototype.findRoutes = function(from, to) {
 	var singleRoute = this.findSingleRoutes(from, to);
 
 	if(singleRoute.length > 0) {
-		return [{
+		return {
 			from 	: from,
 			to 		: to,
 			routes 	: singleRoute,
 			distance: this.getDistance(singleRoute[0], from, to)
-		}];
+		};
 	}
 	else {
 		/** 
 			if not found, try to find reachable nodes from the first route, and 
 			from the second route, and any intersecting stops 
 		*/
-		var fromStops = [], toStops = [], toc, fromc, doubleRoutes1 = [], doubleRoutes2 = [], _self = this;
+		var fromStops = [], toStops = [], toc, fromc, distances, doubleRoutes = [], _self = this;
 		fromRoutes.forEach(function(fr) {
 			fromStops = fromStops.concat(_self.findReachableStops(fr, from));
 		});
@@ -116,28 +116,27 @@ Router.prototype.findRoutes = function(from, to) {
 		*/
 		common = this.intersect(fromStops, toStops);
 		common.forEach(function(c) {
-			toc = _self.findSingleRoutes(from, c);
-			doubleRoutes1.push({
-				from 	: from,
-				to 		: c,
-				routes 	: toc,
-				distance: _self.getDistance(toc[0], from, c)
-			});
+			toc 		= _self.findSingleRoutes(from, c);
+			fromc 		= _self.findSingleRoutes(c, to);
+			distances 	= [
+				_self.getDistance(toc[0], from, c),
+				_self.getDistance(fromc[0], c, to)
+			];
 
-			fromc = _self.findSingleRoutes(c, to);
-			doubleRoutes2.push({
-				from 	: c,
+			doubleRoutes.push({
+				from 	: from,
+				routes 	: [
+					{ routes: toc, 		distance: distances[0] },
+					{ routes: fromc, 	distance: distances[1] }
+				],
+				change 	: c,
 				to 		: to,
-				routes 	: fromc,
-				distance: _self.getDistance(fromc[0], c, to)
+				distance: distances[0] + distances[1]
 			});
 		});
 
-		if(doubleRoutes1.length > 0 && doubleRoutes2.length > 0) {
-			return [
-				doubleRoutes1.sort(this.sortByDistance), 
-				doubleRoutes2.sort(this.sortByDistance)
-			];
+		if(doubleRoutes.length > 0) {
+			return doubleRoutes.sort(this.sortByDistance)
 		}
 	}
 };
