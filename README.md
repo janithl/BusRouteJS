@@ -1,64 +1,69 @@
-Bus-Route-Finder-3.0
-====================
+BusRouteJS
+==========
 
-JS rewrite of bus route finder ~~with lots of goodies~~
+A JS rewrite of bus route finder.
 
-Currently in preliminary development, so these are subject to change
+Currently in preliminary development, so everything is subject to change
 without notice.
 
-## Demo
+Demo
+----
 
-[There's a demo here](http://janithl.github.io/Bus-Route-Finder-3.0/). You 
+[There's a demo here](http://janithl.github.io/BusRouteJS/). You 
 have to turn on touch event emulation on Chrome to access the modal screens.
 
-## API
+API
+---
 
-Calling `Router.findRoutes()` with two integers will return a Javascript
-object like this:
+Creating a new Router object and calling  `.findRoutes(from, to)` where `from` is 
+the source place ID and `to` is the destination place ID (both integers) will 
+return an array of Javascript objects like this:
 
 ```javascript
-Router.findRoutes(44, 45)
+var router = new Router();
+router.findRoutes(252, 235);
 
-{
-	"from":{
-		"name":"Anula Vidyalaya",	
-		"lat":6.87195,
-		"lng":79.8843
+[
+	{
+		"from":"252",
+		"routes":[
+			{"routes":["1","2","4","5","6","19","20"],"distance":4144},
+			{"routes":["26"],"distance":3347}
+		],
+		"changes":["53"],
+		"to":"235",
+		"distance":7491
 	},
-	"to":{
-		"name":"Nugegoda",
-		"lat":6.86932,
-		"lng":79.8896
+	{
+		"from":"252",
+		"routes":[
+			{"routes":["1","2","4","5","6","19","20"],"distance":12324},
+			{"routes":["12","13","14"],"distance":6661}
+		],
+		"changes":["39"],
+		"to":"235",
+		"distance":18985
 	},
-	"routes":[
-		{
-			"buses":[
-				[
-					{"routeno":"138","from":"Pettah","to":"Kottawa","dist":656},
-					{"routeno":"138","from":"Pettah","to":"Homagama","dist":656},
-					{"routeno":"138","from":"Pettah","to":"Maharagama","dist":656},
-					{"routeno":"138/2","from":"Pettah","to":"Mattegoda","dist":656},
-					{"routeno":"138/4","from":"Pettah","to":"Athurugiriya","dist":656},
-					{"routeno":"138/3","from":"Pettah","to":"Rukmalgama","dist":656}
-				]
-			],
-			"dist":656,
-			"changeovers":[]
-		},
-		{
-			"buses":[
-				[
-					{"routeno":"125","from":"Pettah","to":"Padukka","dist":656},
-					{"routeno":"125","from":"Pettah","to":"Ingiriya","dist":656}
-				]
-			],
-			"dist":656,
-			"changeovers":[]
-		}
-	]
-}
+	{
+		"from":"252",
+		"routes":[
+			{"routes":["1","2","4","5","6","19","20"],"distance":12936},
+			{"routes":["12","13","14"],"distance":7273}
+		],
+		"changes":["38"],
+		"to":"235",
+		"distance":20209
+	},
+	...
+]
 ```
 
-Basically, the biggest improvement over the last (php) version is that it now
+The biggest improvement over the last (PHP) version is that it now
 handles similar (almost duplicate, but alternate - like Kottawa/Pettah and Homagama/Pettah)
-routes gracefully.
+routes gracefully, and runs completely on the clientside, with big popping 
+Google Maps to boot.
+
+License
+-------
+
+Released under a permissive MIT license.
