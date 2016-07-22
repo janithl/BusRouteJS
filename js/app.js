@@ -3,9 +3,16 @@ var map, source, destination, router = new Router();
 function findRoutes(from, to) {
     var buses = router.findRoutes(from, to);
 
-    document.getElementById('output').innerHTML = buses.map(function(b, index) {
-        return renderOption(b, index);
-    }).join('\n');
+    if(buses) {
+        document.getElementById('output').innerHTML = buses.map(function(b, index) {
+            return renderOption(b, index);
+        }).join('\n');
+    }
+    else {
+        document.getElementById('output').innerHTML = '<div class="panel panel-danger">' +
+        '<div class="panel-heading"><h3 class="panel-title">No Buses</h3></div>' +
+        '<div class="panel-body"><p>Sorry, no buses were found</p></div></div>';
+    }
 }
 
 /** load locations into hash */

@@ -164,23 +164,25 @@ Router.prototype.findRoutes = function(from, to) {
 						tofs	= _self.findSingleRoutes(from, fs);
 						fromts 	= _self.findSingleRoutes(ts, to);
 
-						distances 	= [
-							_self.getDistance(tofs[0], from, fs),
-							_self.getDistance(tots[0], fs, ts),
-							_self.getDistance(fromts[0], ts, to)
-						];
+						if(tofs.length > 0 && fromts.length > 0) {
+							distances 	= [
+								_self.getDistance(tofs[0], from, fs),
+								_self.getDistance(tots[0], fs, ts),
+								_self.getDistance(fromts[0], ts, to)
+							];
 
-						multiRoutes.push({
-							from 	: from,
-							routes 	: [
-								{ routes: tofs, 	distance: distances[0] },
-								{ routes: tots, 	distance: distances[1] },
-								{ routes: fromts, 	distance: distances[2] }
-							],
-							changes : [fs, ts],
-							to 		: to,
-							distance: distances[0] + distances[1] + distances[2]
-						});
+							multiRoutes.push({
+								from 	: from,
+								routes 	: [
+									{ routes: tofs, 	distance: distances[0] },
+									{ routes: tots, 	distance: distances[1] },
+									{ routes: fromts, 	distance: distances[2] }
+								],
+								changes : [fs, ts],
+								to 		: to,
+								distance: distances[0] + distances[1] + distances[2]
+							});
+						}
 					}
 				});
 			});
