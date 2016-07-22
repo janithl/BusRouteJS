@@ -93,7 +93,7 @@ function geolocate() {
         /** on success */
         var nearest = router.getNearestPlace(position.coords.latitude, position.coords.longitude);
         if(nearest) {
-            $('source').val(nearest.name);
+            $('#source').val(nearest.name);
             source = nearest.id;
             
             if(nearest.distance < 1000) {
