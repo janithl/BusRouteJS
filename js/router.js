@@ -205,10 +205,44 @@ Router.prototype.getRouteDetails = function(id) {
 	return this.buses.routes[id];
 };
 
+/** get a list of all places, for autosuggest */
 Router.prototype.getAllPlaces = function() {
 	var places = [];
 	for(var p in this.buses.places) {
 		places.push({ value: this.buses.places[p].name, data: p });
 	}
 	return places;
+};
+
+/** Haversine formula, stolen off http://stackoverflow.com/a/27943 */
+Router.prototype.deg2rad = function(deg) {
+  return deg * (Math.PI/180)
+}
+
+Router.prototype.haversine = function(lat1, lon1, lat2, lon2) {
+	var R = 6371; // Radius of the earth in km
+	var dLat = this.deg2rad(lat2 - lat1);  // deg2rad below
+	var dLon = this.deg2rad(lon2 - lon1); 
+	var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+	Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
+	Math.sin(dLon/2) * Math.sin(dLon/2); 
+	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+	var d = R * c; // Distance in km
+	return d;
+}
+
+/** get the stop nearest to a geolocation */
+Router.prototype.getNearestPlace = function(lat, lon) {
+	var nearby = [], place;
+	for(var p in this.buses.places) {
+		if(Math.abs(this.buses.places[p].lat - lat) < 0.1 && 
+		Math.abs(this.buses.places[p].lon - lon) < 0.1) {
+			place = this.buses.places[p];
+			place.distance = this.haversine(place.lat, place.lon, lat, lon);
+			nearby.push(place);
+		}
+	}
+	return nearby.sort(function(a, b) {
+		return b.distance - a.distance;
+	}).pop();
 };
