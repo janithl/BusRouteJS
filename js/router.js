@@ -135,21 +135,24 @@ Router.prototype.findRoutes = function(from, to) {
 		common.forEach(function(c) {
 			toc 		= _self.findSingleRoutes(from, c);
 			fromc 		= _self.findSingleRoutes(c, to);
-			distances 	= [
-				_self.getDistance(toc[0], from, c),
-				_self.getDistance(fromc[0], c, to)
-			];
 
-			multiRoutes.push({
-				from 	: from,
-				routes 	: [
-					{ routes: toc, 		distance: distances[0] },
-					{ routes: fromc, 	distance: distances[1] }
-				],
-				changes : [c],
-				to 		: to,
-				distance: distances[0] + distances[1]
-			});
+			if(toc.length > 0 && fromc.length > 0) {
+				distances 	= [
+					_self.getDistance(toc[0], from, c),
+					_self.getDistance(fromc[0], c, to)
+				];
+
+				multiRoutes.push({
+					from 	: from,
+					routes 	: [
+						{ routes: toc, 		distance: distances[0] },
+						{ routes: fromc, 	distance: distances[1] }
+					],
+					changes : [c],
+					to 		: to,
+					distance: distances[0] + distances[1]
+				});
+			}
 		});
 
 		if(common.length < 3) {
