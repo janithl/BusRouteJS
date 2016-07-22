@@ -1,13 +1,29 @@
 var map, source, destination, router = new Router();
 
 function findRoutes() {
-    //var buses = router.findRoutes(document.getElementById('source').value, document.getElementById('destination').value);
-    var buses = router.findRoutes(source, destination);
+    var hash  = location.hash.substr(1).split('-');
+    var buses = router.findRoutes(hash[0], hash[1]);
 
     document.getElementById('output').innerHTML = buses.map(function(b, index) {
         return renderOption(b, index);
     }).join('\n');
 }
+
+/** load locations into hash */
+function loadHash() {
+    if(source && destination) {
+        location.hash = source + '-' + destination;
+    }
+}
+
+/** see if locations are stored in the hash */
+function handleHashchange() {
+    if(location.hash.length > 1) {
+        findRoutes();
+    }
+}
+
+window.onhashchange = handleHashchange;
 
 function renderOption(route, index) {
     var output;
@@ -32,9 +48,16 @@ function renderOption(route, index) {
         '</div>';
     }
 
-    return (index == 0 ? ('<div class="panel panel-warning"><div class="panel-heading"><h3 class="panel-title">' + 
-        'Shortest Route</h3></div>') : '<div class="panel panel-default">') + '<div class="panel-body row">' + 
-        output + '</div><div class="panel-footer text-center">Total Distance: <strong>' + 
+    if(index == 0) {
+        output = '<div class="panel panel-warning"><div class="panel-heading"><h3 class="panel-title">' + 
+        '<span class="glyphicon glyphicon-star"></span> Recommended Route</h3></div><div class="panel-body row">' + 
+        output;
+    }
+    else {
+        output = '<div class="panel panel-default"><div class="panel-body row">' + output;
+    }
+
+    return output + '</div><div class="panel-footer text-center">Total Distance: <strong>' + 
         (route.distance / 1000.0).toFixed(2) + 'km </strong></div></div>';
 }
 
@@ -46,7 +69,7 @@ function renderRoute(from, to, distance, buses) {
     var busmarkup = buses.map(function(r) {
         details = router.getRouteDetails(r);
         if(details) {
-            return '<a href="#" class="list-group-item"><strong>#' + details.routeno +
+            return '<a class="list-group-item"><strong>#' + details.routeno +
                     '</strong> (' + details.from + ' - ' + details.to + ')</a>';
         }
     }).join('\n');
@@ -59,8 +82,11 @@ function renderRoute(from, to, distance, buses) {
         '<div class="list-group">' + busmarkup + '</div></div>';
 }
 
-/** load autocomplete on document.ready */
+/** load autocomplete on document.ready, and handle hash if present */
 $(function() {
+
+    handleHashchange();
+
     $('#source').autocomplete({
         lookup: router.getAllPlaces(),
         onSelect: function (suggestion) {

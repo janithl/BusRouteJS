@@ -190,7 +190,7 @@ Router.prototype.findRoutes = function(from, to) {
 			multiRoutes = multiRoutes.filter(function(n) { 
 				return !Number.isNaN(n.distance); 
 			}).sort(function(a, b) {
-				return a.distance - b.distance;
+				return (a.routes.length - b.routes.length) * _self.penalty + (a.distance - b.distance);
 			});
 			return multiRoutes.slice(0, 5);
 		}
