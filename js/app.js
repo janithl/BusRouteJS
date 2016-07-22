@@ -1,8 +1,7 @@
 var map, source, destination, router = new Router();
 
-function findRoutes() {
-    var hash  = location.hash.substr(1).split('-');
-    var buses = router.findRoutes(hash[0], hash[1]);
+function findRoutes(from, to) {
+    var buses = router.findRoutes(from, to);
 
     document.getElementById('output').innerHTML = buses.map(function(b, index) {
         return renderOption(b, index);
@@ -19,7 +18,18 @@ function loadHash() {
 /** see if locations are stored in the hash */
 function handleHashchange() {
     if(location.hash.length > 1) {
-        findRoutes();
+        var hash    = location.hash.substr(1).split('-');
+        var from    = router.getPlaceDetails(hash[0]);
+        var to      = router.getPlaceDetails(hash[1]);
+        if(from && to) {
+            $('#source').val(from.name);
+            $('#destination').val(to.name);
+
+            source      = hash[0];
+            destination = hash[1];
+
+            findRoutes(hash[0], hash[1]);
+        }
     }
 }
 
@@ -115,13 +125,13 @@ function geolocate() {
 
 /** load autocomplete on document.ready, and handle hash if present */
 $(function() {
-
     handleHashchange();
 
     $('#source').autocomplete({
         lookup: router.getAllPlaces(),
         onSelect: function (suggestion) {
             source = suggestion.data;
+            loadHash();
         }
     });
 
@@ -129,6 +139,7 @@ $(function() {
         lookup: router.getAllPlaces(),
         onSelect: function (suggestion) {
             destination = suggestion.data;
+            loadHash();
         }
     });
 });
