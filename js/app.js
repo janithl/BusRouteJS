@@ -1,8 +1,8 @@
-var map, router = new Router();
+var map, source, destination, router = new Router();
 
 function findRoutes() {
-    var buses = router.findRoutes(document.getElementById('source').value, document.getElementById('destination').value);
-
+    //var buses = router.findRoutes(document.getElementById('source').value, document.getElementById('destination').value);
+    var buses = router.findRoutes(source, destination);
 
     document.getElementById('output').innerHTML = buses.map(function(b, index) {
         return renderOption(b, index);
@@ -12,7 +12,8 @@ function findRoutes() {
 function renderOption(route, index) {
     var output;
     if(route.changes.length == 0) {
-        output = renderRoute(route.from, route.to, route.distance, route.routes[0].routes);
+        output = '<div class="col-xs-12">' + 
+            renderRoute(route.from, route.to, route.distance, route.routes[0].routes) + '</div>';
     }
     else if(route.changes.length == 1) {
         output = '<div class="col-xs-6">' + 
@@ -57,6 +58,23 @@ function renderRoute(from, to, distance, buses) {
         to.name + '</a> (' + (distance / 1000.0).toFixed(2) + 'km)</h3></div>' + 
         '<div class="list-group">' + busmarkup + '</div></div>';
 }
+
+/** load autocomplete on document.ready */
+$(function() {
+    $('#source').autocomplete({
+        lookup: router.getAllPlaces(),
+        onSelect: function (suggestion) {
+            source = suggestion.data;
+        }
+    });
+
+    $('#destination').autocomplete({
+        lookup: router.getAllPlaces(),
+        onSelect: function (suggestion) {
+            destination = suggestion.data;
+        }
+    });
+});
 
 /** Google Map code stolen off http://stackoverflow.com/a/26410438 */
 function initMap(myCenter) {

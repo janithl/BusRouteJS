@@ -106,7 +106,7 @@ Router.prototype.findRoutes = function(from, to) {
 		return [{
 			from 	: from,
 			routes 	: [
-				{ routes: singleRoute.slice(0, 10), distance: distance }
+				{ routes: singleRoute.slice(0, 5), distance: distance }
 			],
 			changes : [],
 			to 		: to,
@@ -192,7 +192,7 @@ Router.prototype.findRoutes = function(from, to) {
 			}).sort(function(a, b) {
 				return a.distance - b.distance;
 			});
-			return multiRoutes.slice(0, 10);
+			return multiRoutes.slice(0, 5);
 		}
 	}
 };
@@ -203,4 +203,12 @@ Router.prototype.getPlaceDetails = function(pid) {
 
 Router.prototype.getRouteDetails = function(id) {
 	return this.buses.routes[id];
+};
+
+Router.prototype.getAllPlaces = function() {
+	var places = [];
+	for(var p in this.buses.places) {
+		places.push({ value: this.buses.places[p].name, data: p });
+	}
+	return places;
 };
