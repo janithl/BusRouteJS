@@ -23,8 +23,10 @@ Router.prototype.getDistance = function(route, from, to) {
 		return 1/0;
 	}
 
-	return Math.max(this.buses.routes[route].stopsfrom[to] - this.buses.routes[route].stopsfrom[from],
-		this.buses.routes[route].stopsto[to] - this.buses.routes[route].stopsto[from]);
+	var fromdist 	= this.buses.routes[route].stopsfrom[to] - this.buses.routes[route].stopsfrom[from];
+	var todist 		= this.buses.routes[route].stopsto[to] - this.buses.routes[route].stopsto[from];
+
+	return fromdist > 0 ? fromdist : (todist > 0 ? todist : 1/0);
 };
 
 /** 
