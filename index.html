@@ -53,11 +53,11 @@
                         <div class="input-group input-group-lg">
                             <input id="source" type="text" class="form-control" placeholder="I'm at...">
                             <span class="input-group-btn">
-                                <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-map-marker"></span> Locate Me!</button>
+                                <button onclick="geolocate()" class="btn btn-default" type="button">
+                                    <span class="glyphicon glyphicon-map-marker"></span> Locate Me!
+                                </button>
                             </span>
                         </div><!-- /input-group -->
-
-                        <div id="walk-warning" class="hide"><p class="lead text-center text-primary">You might have to walk <span id="walk-distance"></span></p></div>
                     </div><!-- /.col-sm-6 -->
 
                     <div class="visible-xs col-xs-12 text-center"><br></div>
@@ -66,11 +66,15 @@
                         <div class="input-group input-group-lg">
                             <input id="destination" type="text" class="form-control" placeholder="I want to go to...">
                             <span class="input-group-btn">
-                                <button onclick="loadHash()" class="btn btn-default btn-success" type="button">Find Me A Bus!</button>
+                                <button onclick="loadHash()" class="btn btn-default btn-success" type="button">
+                                    Find Me A Bus!
+                                </button>
                             </span>
                         </div><!-- /input-group -->
                     </div><!-- /.col-sm-6 -->
                 </div><!-- /.row -->
+
+                <div><p id="walk-warning" class="hide lead text-center text-warning"></p></div>
             </div>
 
             <div id="output"></div>

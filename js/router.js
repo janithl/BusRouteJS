@@ -236,8 +236,9 @@ Router.prototype.getNearestPlace = function(lat, lon) {
 	for(var p in this.buses.places) {
 		if(Math.abs(this.buses.places[p].lat - lat) < 0.1 && 
 		Math.abs(this.buses.places[p].lon - lon) < 0.1) {
-			place = this.buses.places[p];
-			place.distance = this.haversine(place.lat, place.lon, lat, lon);
+			place 			= this.buses.places[p];
+			place.id 		= p;
+			place.distance 	= this.haversine(place.lat, place.lon, lat, lon);
 			nearby.push(place);
 		}
 	}

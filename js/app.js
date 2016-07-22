@@ -82,6 +82,37 @@ function renderRoute(from, to, distance, buses) {
         '<div class="list-group">' + busmarkup + '</div></div>';
 }
 
+/** geolocate code from MDN: https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation */
+function geolocate() {
+    if (!navigator.geolocation) {
+        $('#walk-warning').text('Sorry! Your browser does not support Geolocation.').removeClass('hide');
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(function(position) {
+        /** on success */
+        var nearest = router.getNearestPlace(position.coords.latitude, position.coords.longitude);
+        if(nearest) {
+            $('source').val(nearest.name);
+            source = nearest.id;
+            
+            if(nearest.distance < 1000) {
+                $('#walk-warning').addClass('hide');
+            }
+            else {
+                $('#walk-warning').text('You might have to walk ' + 
+                    (nearest.distance / 1000.0).toFixed(2) + 'km').removeClass('hide');
+            }
+        }
+        else {
+            $('#walk-warning').text('Sorry! No bus stops found nearby.').removeClass('hide');
+        }
+    }, function() {
+        /** on error */
+        $('#walk-warning').text('Sorry! There was an error in getting your location.').removeClass('hide');
+    });
+}
+
 /** load autocomplete on document.ready, and handle hash if present */
 $(function() {
 
