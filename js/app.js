@@ -140,6 +140,24 @@ class UserInput extends Component {
     }
 }
 
+class DisplayAlert extends Component {
+    render() {
+        if(this.props.message) {
+            var cssclass = 'alert alert-dismissible alert-' + this.props.cssclass;
+            return (
+                <div className={cssclass}>
+                    <button type="button" className="close" data-dismiss="alert">&times;</button>
+                    <h4>{this.props.title}</h4>
+                    <p>{this.props.message}</p>
+                </div>
+            );
+        }
+        else {
+            return <div/>;
+        }
+    }
+}
+
 class App extends Component {
     constructor() {
         super();
@@ -154,6 +172,8 @@ class App extends Component {
             destinationSug: [],
 
             locations: router.getAllPlaces(),
+            routes: [],
+
             error: null,
             warning: null
         };
@@ -210,7 +230,14 @@ class App extends Component {
     }
 
     findRoutes() {
-        this.setError('Find Routes');
+        if(this.state.source.id && this.state.destination.id) {
+            this.setState({
+                routes: router.findRoutes(this.state.source.id, this.state.destination.id)
+            });
+        }
+        else {
+            this.setError("You haven't entered where you are and/or where you want to go!");
+        }
     }
 
     render() {
@@ -223,9 +250,11 @@ class App extends Component {
                     setSource={this.setSource}
                     setDestination={this.setDestination}
                     findRoutes={this.findRoutes} />
-                <p>This is where things go down {Math.random()}</p>
-                <p>{this.state.error}</p>
-                <p>{this.state.warning}</p>
+
+                <DisplayAlert cssclass="danger" title="Error!" message={this.state.error}/>
+                <DisplayAlert cssclass="warning" title="Warning!" message={this.state.warning}/>
+
+                <pre>{JSON.stringify(this.state.routes)}</pre>
             </div>
         );
     }

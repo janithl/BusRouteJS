@@ -257,15 +257,57 @@ var UserInput = function (_Component6) {
     return UserInput;
 }(_react.Component);
 
-var App = function (_Component7) {
-    _inherits(App, _Component7);
+var DisplayAlert = function (_Component7) {
+    _inherits(DisplayAlert, _Component7);
+
+    function DisplayAlert() {
+        _classCallCheck(this, DisplayAlert);
+
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(DisplayAlert).apply(this, arguments));
+    }
+
+    _createClass(DisplayAlert, [{
+        key: 'render',
+        value: function render() {
+            if (this.props.message) {
+                var cssclass = 'alert alert-dismissible alert-' + this.props.cssclass;
+                return _react2.default.createElement(
+                    'div',
+                    { className: cssclass },
+                    _react2.default.createElement(
+                        'button',
+                        { type: 'button', className: 'close', 'data-dismiss': 'alert' },
+                        '×'
+                    ),
+                    _react2.default.createElement(
+                        'h4',
+                        null,
+                        this.props.title
+                    ),
+                    _react2.default.createElement(
+                        'p',
+                        null,
+                        this.props.message
+                    )
+                );
+            } else {
+                return _react2.default.createElement('div', null);
+            }
+        }
+    }]);
+
+    return DisplayAlert;
+}(_react.Component);
+
+var App = function (_Component8) {
+    _inherits(App, _Component8);
 
     function App() {
         _classCallCheck(this, App);
 
-        var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this));
+        var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this));
 
-        _this7.state = {
+        _this8.state = {
             userLat: null,
             userLon: null,
 
@@ -276,19 +318,21 @@ var App = function (_Component7) {
             destinationSug: [],
 
             locations: router.getAllPlaces(),
+            routes: [],
+
             error: null,
             warning: null
         };
 
-        _this7.setUserLoc = _this7.setUserLoc.bind(_this7);
-        _this7.setError = _this7.setError.bind(_this7);
-        _this7.findRoutes = _this7.findRoutes.bind(_this7);
+        _this8.setUserLoc = _this8.setUserLoc.bind(_this8);
+        _this8.setError = _this8.setError.bind(_this8);
+        _this8.findRoutes = _this8.findRoutes.bind(_this8);
 
-        _this7.setSource = _this7.setSource.bind(_this7);
-        _this7.setDestination = _this7.setDestination.bind(_this7);
+        _this8.setSource = _this8.setSource.bind(_this8);
+        _this8.setDestination = _this8.setDestination.bind(_this8);
 
-        _this7.filterSuggestions = _this7.filterSuggestions.bind(_this7);
-        return _this7;
+        _this8.filterSuggestions = _this8.filterSuggestions.bind(_this8);
+        return _this8;
     }
 
     _createClass(App, [{
@@ -342,7 +386,13 @@ var App = function (_Component7) {
     }, {
         key: 'findRoutes',
         value: function findRoutes() {
-            this.setError('Find Routes');
+            if (this.state.source.id && this.state.destination.id) {
+                this.setState({
+                    routes: router.findRoutes(this.state.source.id, this.state.destination.id)
+                });
+            } else {
+                this.setError("You haven't entered where you are and/or where you want to go!");
+            }
         }
     }, {
         key: 'render',
@@ -357,21 +407,12 @@ var App = function (_Component7) {
                     setSource: this.setSource,
                     setDestination: this.setDestination,
                     findRoutes: this.findRoutes }),
+                _react2.default.createElement(DisplayAlert, { cssclass: 'danger', title: 'Error!', message: this.state.error }),
+                _react2.default.createElement(DisplayAlert, { cssclass: 'warning', title: 'Warning!', message: this.state.warning }),
                 _react2.default.createElement(
-                    'p',
+                    'pre',
                     null,
-                    'This is where things go down ',
-                    Math.random()
-                ),
-                _react2.default.createElement(
-                    'p',
-                    null,
-                    this.state.error
-                ),
-                _react2.default.createElement(
-                    'p',
-                    null,
-                    this.state.warning
+                    JSON.stringify(this.state.routes)
                 )
             );
         }
@@ -2621,8 +2662,6 @@ Router.prototype.findRoutes = function (from, to) {
   */
 		var fromStops = [],
 		    toStops = [],
-		    toc,
-		    fromc,
 		    distances,
 		    multiRoutes = [],
 		    _self = this;
@@ -2638,10 +2677,10 @@ Router.prototype.findRoutes = function (from, to) {
   	2 bus: find intersecting stops, and routes to take you from your starting node 
   	to your intersection, and from the intersection to the end stop
   */
-		common = this.intersect(fromStops, toStops);
+		var common = this.intersect(fromStops, toStops);
 		common.forEach(function (c) {
-			toc = _self.findSingleRoutes(from, c);
-			fromc = _self.findSingleRoutes(c, to);
+			var toc = _self.findSingleRoutes(from, c);
+			var fromc = _self.findSingleRoutes(c, to);
 
 			if (toc.length > 0 && fromc.length > 0) {
 				distances = [_self.getDistance(toc[0], from, c), _self.getDistance(fromc[0], c, to)];
@@ -2663,10 +2702,10 @@ Router.prototype.findRoutes = function (from, to) {
    */
 			fromStops.forEach(function (fs) {
 				toStops.forEach(function (ts) {
-					tots = _self.findSingleRoutes(fs, ts);
+					var tots = _self.findSingleRoutes(fs, ts);
 					if (tots.length > 0) {
-						tofs = _self.findSingleRoutes(from, fs);
-						fromts = _self.findSingleRoutes(ts, to);
+						var tofs = _self.findSingleRoutes(from, fs);
+						var fromts = _self.findSingleRoutes(ts, to);
 
 						if (tofs.length > 0 && fromts.length > 0) {
 							distances = [_self.getDistance(tofs[0], from, fs), _self.getDistance(tots[0], fs, ts), _self.getDistance(fromts[0], ts, to)];

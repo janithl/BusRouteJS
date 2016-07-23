@@ -122,7 +122,7 @@ Router.prototype.findRoutes = function(from, to) {
 			if not found, try to find reachable nodes from the first route, and 
 			from the second route, and any intersecting stops 
 		*/
-		var fromStops = [], toStops = [], toc, fromc, distances, multiRoutes = [], _self = this;
+		var fromStops = [], toStops = [], distances, multiRoutes = [], _self = this;
 		fromRoutes.forEach(function(fr) {
 			fromStops = fromStops.concat(_self.findReachableStops(fr, from));
 		});
@@ -135,10 +135,10 @@ Router.prototype.findRoutes = function(from, to) {
 			2 bus: find intersecting stops, and routes to take you from your starting node 
 			to your intersection, and from the intersection to the end stop
 		*/
-		common = this.intersect(fromStops, toStops);
+		var common = this.intersect(fromStops, toStops);
 		common.forEach(function(c) {
-			toc 		= _self.findSingleRoutes(from, c);
-			fromc 		= _self.findSingleRoutes(c, to);
+			var toc 	= _self.findSingleRoutes(from, c);
+			var fromc 	= _self.findSingleRoutes(c, to);
 
 			if(toc.length > 0 && fromc.length > 0) {
 				distances 	= [
@@ -166,10 +166,10 @@ Router.prototype.findRoutes = function(from, to) {
 			*/
 			fromStops.forEach(function(fs) {
 				toStops.forEach(function(ts) {
-					tots	= _self.findSingleRoutes(fs, ts);
+					var tots	= _self.findSingleRoutes(fs, ts);
 					if(tots.length > 0) {
-						tofs	= _self.findSingleRoutes(from, fs);
-						fromts 	= _self.findSingleRoutes(ts, to);
+						var tofs	= _self.findSingleRoutes(from, fs);
+						var fromts 	= _self.findSingleRoutes(ts, to);
 
 						if(tofs.length > 0 && fromts.length > 0) {
 							distances 	= [
