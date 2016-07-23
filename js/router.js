@@ -93,8 +93,6 @@ Router.prototype.findSingleRoutes = function(from, to) {
 
 /** find routes between two nodes */
 Router.prototype.findRoutes = function(from, to) {
-	if(from === to) return { error: 'Source and destination same'};
-
 	var fromRoutes 	= this.findStopRoutes(from); /** bus routes passing through start node */
 	var toRoutes 	= this.findStopRoutes(to); /** bus routes passing through end node */
 

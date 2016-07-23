@@ -387,9 +387,16 @@ var App = function (_Component8) {
         key: 'findRoutes',
         value: function findRoutes() {
             if (this.state.source.id && this.state.destination.id) {
-                this.setState({
-                    routes: router.findRoutes(this.state.source.id, this.state.destination.id)
-                });
+                if (this.state.source.id === this.state.destination.id) {
+                    this.setError("Source and destination same");
+                } else {
+                    var routes = router.findRoutes(this.state.source.id, this.state.destination.id);
+                    if (routes.length > 0) {
+                        this.setState({ routes: routes, error: null });
+                    } else {
+                        this.setError("Sorry! No buses were found.");
+                    }
+                }
             } else {
                 this.setError("You haven't entered where you are and/or where you want to go!");
             }
@@ -2634,8 +2641,6 @@ Router.prototype.findSingleRoutes = function (from, to) {
 
 /** find routes between two nodes */
 Router.prototype.findRoutes = function (from, to) {
-	if (from === to) return { error: 'Source and destination same' };
-
 	var fromRoutes = this.findStopRoutes(from); /** bus routes passing through start node */
 	var toRoutes = this.findStopRoutes(to); /** bus routes passing through end node */
 
