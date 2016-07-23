@@ -46,40 +46,7 @@
             </div>
         </nav>
 
-        <div class="container">
-            <div class="jumbotron text-center">
-                <p class="lead">Enter where you are and where you want to go below:</p>
-                <div class="row">
-                    <div class="col-xs-12 col-sm-6">
-                        <div class="input-group input-group-lg">
-                            <input id="source" type="text" class="form-control" placeholder="I'm at...">
-                            <span class="input-group-btn">
-                                <button onclick="geolocate()" class="btn btn-default" type="button">
-                                    <span class="glyphicon glyphicon-map-marker"></span> Locate Me!
-                                </button>
-                            </span>
-                        </div><!-- /input-group -->
-                    </div><!-- /.col-sm-6 -->
-
-                    <div class="visible-xs col-xs-12 text-center"><br></div>
-
-                    <div class="col-xs-12 col-sm-6">
-                        <div class="input-group input-group-lg">
-                            <input id="destination" type="text" class="form-control" placeholder="I want to go to...">
-                            <span class="input-group-btn">
-                                <button onclick="loadHash()" class="btn btn-default btn-success" type="button">
-                                    Find Me A Bus!
-                                </button>
-                            </span>
-                        </div><!-- /input-group -->
-                    </div><!-- /.col-sm-6 -->
-                </div><!-- /.row -->
-
-                <div><p id="walk-warning" class="hide lead text-center text-warning"></p></div>
-            </div>
-
-            <div id="output"></div>
-        </div><!-- /.container -->
+        <div id="app" class="container"></div><!-- /.container -->
 
         <div id="map-modal" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog">
@@ -102,8 +69,6 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsASjcXUAaIoNF9pFs_UobMB7SPkinOis&callback=initMap" async defer></script>
         <script src="js/jquery.autocomplete.min.js"></script>
-        <script src="js/buses.js"></script>
-        <script src="js/router.js"></script>
-        <script src="js/app.js"></script>
+        <script src="bundle.js"></script>
     </body>
 </html>
