@@ -2,6 +2,9 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import Router from './router';
+
+var router = new Router();
 
 class LocateMeButton extends Component {
     constructor() {
@@ -37,9 +40,26 @@ class SourceInput extends Component {
     render() {
         return (
             <div className="input-group input-group-lg">
-                <input id="source" type="text" className="form-control" placeholder="I'm at..."/>
+                <input id="source" type="text" className="form-control" placeholder="I'm at..." 
+                    value={this.props.appState.source.name} onChange={this.props.sourceInput}/>
                 <span className="input-group-btn">
                     <LocateMeButton {...this.props}/>
+                </span>
+            </div>
+        );
+    }
+}
+
+class DestinationInput extends Component {
+    render() {
+        return (
+            <div className="input-group input-group-lg">
+                <input id="destination" type="text" className="form-control" placeholder="I want to go to..." 
+                    value={this.props.appState.destination.name} onChange={this.props.destinationInput}/>
+                <span className="input-group-btn">
+                    <button onClick={this.props.findRoutes} className="btn btn-default btn-success" type="button">
+                        Find Me A Bus!
+                    </button>
                 </span>
             </div>
         );
@@ -52,23 +72,16 @@ class UserInput extends Component {
             <div className="jumbotron text-center">
                 <p className="lead">Enter where you are and where you want to go below:</p>
                 <div className="row">
-                    <div className="col-xs-12 col-sm-6"><SourceInput {...this.props}/></div>
+                    <div className="col-xs-12 col-sm-6">
+                        <SourceInput {...this.props}/>
+                    </div>
 
                     <div className="visible-xs col-xs-12 text-center"><br/></div>
 
                     <div className="col-xs-12 col-sm-6">
-                        <div className="input-group input-group-lg">
-                            <input id="destination" type="text" className="form-control" placeholder="I want to go to..."/>
-                            <span className="input-group-btn">
-                                <button onclick="loadHash()" className="btn btn-default btn-success" type="button">
-                                    Find Me A Bus!
-                                </button>
-                            </span>
-                        </div>
+                        <DestinationInput {...this.props}/>
                     </div>
                 </div>
-
-                <div><p id="walk-warning" className="hide lead text-center text-warning"/></div>
             </div>
         );
     }
@@ -80,10 +93,21 @@ class App extends Component {
         this.state = {
             userLat: null,
             userLon: null,
-            error: null
+
+            source: { id: null, name: '' },
+            sourceSug: [],
+
+            destination: { id: null, name: '' },
+            destinationSug: [],
+
+            error: null,
+            warning: null
         };
-        this.setUserLoc = this.setUserLoc.bind(this);
-        this.setError   = this.setError.bind(this);
+        this.setUserLoc         = this.setUserLoc.bind(this);
+        this.setError           = this.setError.bind(this);
+        this.findRoutes         = this.findRoutes.bind(this);
+        this.sourceInput        = this.sourceInput.bind(this);
+        this.destinationInput   = this.destinationInput.bind(this);
     }
 
     setError(error) {
@@ -92,14 +116,46 @@ class App extends Component {
 
     setUserLoc(userLat, userLon) {
         this.setState({userLat, userLon});
+
+        var nearest = router.getNearestPlace(userLat, userLon);
+        if(nearest) {
+            this.setState({
+                source: { id: nearest.id, name: nearest.name }
+            });
+
+            if(nearest.distance > 1000) {
+                this.setState({
+                    warning: 'You might have to walk ' + (nearest.distance / 1000.0).toFixed(2) + 'km'
+                });
+            }
+        }
+    }
+
+    sourceInput(event) {
+        this.setState({ source: { id: null, name: event.target.value }});
+    }
+
+    destinationInput(event) {
+        this.setState({ destination: { id: null, name: event.target.value }});
+    }
+
+    findRoutes() {
+        this.setError('Find Routes');
     }
 
     render() {
         return (
             <div>
-                <UserInput appState={this.state} setUserLoc={this.setUserLoc} setError={this.setError} />
+                <UserInput 
+                    appState={this.state} 
+                    setUserLoc={this.setUserLoc} 
+                    setError={this.setError}
+                    sourceInput={this.sourceInput}
+                    destinationInput={this.destinationInput}
+                    findRoutes={this.findRoutes} />
                 <p>This is where things go down {Math.random()}</p>
                 <p>{this.state.error}</p>
+                <p>{this.state.warning}</p>
                 <p>Lat: {this.state.userLat}</p>
                 <p>Lon: {this.state.userLon}</p>
             </div>

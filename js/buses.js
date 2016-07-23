@@ -1931,3 +1931,5 @@ var Buses = {
 		}
 	}
 };
+
+export default Buses;
