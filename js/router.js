@@ -218,7 +218,7 @@ Router.prototype.getRouteDetails = function(id) {
 Router.prototype.getAllPlaces = function() {
 	var places = [];
 	for(var p in this.buses.places) {
-		places.push({ value: this.buses.places[p].name, data: p });
+		places.push({ id: p, name: this.buses.places[p].name });
 	}
 	return places;
 };

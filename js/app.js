@@ -36,12 +36,54 @@ class LocateMeButton extends Component {
     }
 }
 
+class Suggestion extends Component {
+    constructor() {
+        super();
+        this.setSuggestion = this.setSuggestion.bind(this);
+    }
+
+    setSuggestion() {
+        this.props.setSuggestion(this.props.suggestion.id, this.props.suggestion.name);
+    }
+
+    render() {
+        return <a className="list-group-item" onClick={this.setSuggestion} key={this.props.suggestion.id}>{this.props.suggestion.name}</a>;
+    }
+}
+
+class SuggestionsList extends Component {
+    render() {
+        if(this.props.suggestions.length == 0) {
+            return <div/>
+        }
+        else {
+            var _props = this.props;
+            return (
+                <div className="list-group text-left">
+                    {this.props.suggestions.map(function(sug) {
+                        return <Suggestion suggestion={sug} setSuggestion={_props.setSuggestion}/>;
+                    })}
+                </div>
+            );
+        }
+    }
+}
+
 class SourceInput extends Component {
+    constructor() {
+        super();
+        this.handleInput = this.handleInput.bind(this);
+    }
+
+    handleInput(event) {
+        this.props.setSource(null, event.target.value);
+    }
+
     render() {
         return (
             <div className="input-group input-group-lg">
                 <input id="source" type="text" className="form-control" placeholder="I'm at..." 
-                    value={this.props.appState.source.name} onChange={this.props.sourceInput}/>
+                    value={this.props.appState.source.name} onChange={this.handleInput}/>
                 <span className="input-group-btn">
                     <LocateMeButton {...this.props}/>
                 </span>
@@ -51,11 +93,20 @@ class SourceInput extends Component {
 }
 
 class DestinationInput extends Component {
+    constructor() {
+        super();
+        this.handleInput = this.handleInput.bind(this);
+    }
+
+    handleInput(event) {
+        this.props.setDestination(null, event.target.value);
+    }
+
     render() {
         return (
             <div className="input-group input-group-lg">
                 <input id="destination" type="text" className="form-control" placeholder="I want to go to..." 
-                    value={this.props.appState.destination.name} onChange={this.props.destinationInput}/>
+                    value={this.props.appState.destination.name} onChange={this.handleInput}/>
                 <span className="input-group-btn">
                     <button onClick={this.props.findRoutes} className="btn btn-default btn-success" type="button">
                         Find Me A Bus!
@@ -74,12 +125,14 @@ class UserInput extends Component {
                 <div className="row">
                     <div className="col-xs-12 col-sm-6">
                         <SourceInput {...this.props}/>
+                        <SuggestionsList suggestions={this.props.appState.sourceSug} setSuggestion={this.props.setSource}/>
                     </div>
 
                     <div className="visible-xs col-xs-12 text-center"><br/></div>
 
                     <div className="col-xs-12 col-sm-6">
                         <DestinationInput {...this.props}/>
+                        <SuggestionsList suggestions={this.props.appState.destinationSug} setSuggestion={this.props.setDestination}/>
                     </div>
                 </div>
             </div>
@@ -100,14 +153,19 @@ class App extends Component {
             destination: { id: null, name: '' },
             destinationSug: [],
 
+            locations: router.getAllPlaces(),
             error: null,
             warning: null
         };
-        this.setUserLoc         = this.setUserLoc.bind(this);
-        this.setError           = this.setError.bind(this);
-        this.findRoutes         = this.findRoutes.bind(this);
-        this.sourceInput        = this.sourceInput.bind(this);
-        this.destinationInput   = this.destinationInput.bind(this);
+
+        this.setUserLoc     = this.setUserLoc.bind(this);
+        this.setError       = this.setError.bind(this);
+        this.findRoutes     = this.findRoutes.bind(this);
+
+        this.setSource      = this.setSource.bind(this);
+        this.setDestination = this.setDestination.bind(this);
+
+        this.filterSuggestions  = this.filterSuggestions.bind(this);
     }
 
     setError(error) {
@@ -119,9 +177,7 @@ class App extends Component {
 
         var nearest = router.getNearestPlace(userLat, userLon);
         if(nearest) {
-            this.setState({
-                source: { id: nearest.id, name: nearest.name }
-            });
+            this.setSource(nearest.id, nearest.name);
 
             if(nearest.distance > 1000) {
                 this.setState({
@@ -131,12 +187,26 @@ class App extends Component {
         }
     }
 
-    sourceInput(event) {
-        this.setState({ source: { id: null, name: event.target.value }});
+    setSource(id, name) {
+        this.setState({ 
+            source: { id: id, name: name },
+            sourceSug: id ? [] : this.filterSuggestions(name)
+        });
     }
 
-    destinationInput(event) {
-        this.setState({ destination: { id: null, name: event.target.value }});
+    setDestination(id, name) {
+        this.setState({ 
+            destination: { id: id, name: name },
+            destinationSug: id ? [] : this.filterSuggestions(name)
+        });
+    }
+
+    filterSuggestions(term) {
+        if(term.length > 0) {
+            var regexp = new RegExp(term, 'i');
+            return this.state.locations.filter(function(elem) { return regexp.test(elem.name); }).slice(0,4);
+        }
+        return [];
     }
 
     findRoutes() {
@@ -150,14 +220,12 @@ class App extends Component {
                     appState={this.state} 
                     setUserLoc={this.setUserLoc} 
                     setError={this.setError}
-                    sourceInput={this.sourceInput}
-                    destinationInput={this.destinationInput}
+                    setSource={this.setSource}
+                    setDestination={this.setDestination}
                     findRoutes={this.findRoutes} />
                 <p>This is where things go down {Math.random()}</p>
                 <p>{this.state.error}</p>
                 <p>{this.state.warning}</p>
-                <p>Lat: {this.state.userLat}</p>
-                <p>Lon: {this.state.userLon}</p>
             </div>
         );
     }

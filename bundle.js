@@ -70,23 +70,92 @@ var LocateMeButton = function (_Component) {
     return LocateMeButton;
 }(_react.Component);
 
-var SourceInput = function (_Component2) {
-    _inherits(SourceInput, _Component2);
+var Suggestion = function (_Component2) {
+    _inherits(Suggestion, _Component2);
+
+    function Suggestion() {
+        _classCallCheck(this, Suggestion);
+
+        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(Suggestion).call(this));
+
+        _this2.setSuggestion = _this2.setSuggestion.bind(_this2);
+        return _this2;
+    }
+
+    _createClass(Suggestion, [{
+        key: 'setSuggestion',
+        value: function setSuggestion() {
+            this.props.setSuggestion(this.props.suggestion.id, this.props.suggestion.name);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'a',
+                { className: 'list-group-item', onClick: this.setSuggestion, key: this.props.suggestion.id },
+                this.props.suggestion.name
+            );
+        }
+    }]);
+
+    return Suggestion;
+}(_react.Component);
+
+var SuggestionsList = function (_Component3) {
+    _inherits(SuggestionsList, _Component3);
+
+    function SuggestionsList() {
+        _classCallCheck(this, SuggestionsList);
+
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(SuggestionsList).apply(this, arguments));
+    }
+
+    _createClass(SuggestionsList, [{
+        key: 'render',
+        value: function render() {
+            if (this.props.suggestions.length == 0) {
+                return _react2.default.createElement('div', null);
+            } else {
+                var _props = this.props;
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'list-group text-left' },
+                    this.props.suggestions.map(function (sug) {
+                        return _react2.default.createElement(Suggestion, { suggestion: sug, setSuggestion: _props.setSuggestion });
+                    })
+                );
+            }
+        }
+    }]);
+
+    return SuggestionsList;
+}(_react.Component);
+
+var SourceInput = function (_Component4) {
+    _inherits(SourceInput, _Component4);
 
     function SourceInput() {
         _classCallCheck(this, SourceInput);
 
-        return _possibleConstructorReturn(this, Object.getPrototypeOf(SourceInput).apply(this, arguments));
+        var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(SourceInput).call(this));
+
+        _this4.handleInput = _this4.handleInput.bind(_this4);
+        return _this4;
     }
 
     _createClass(SourceInput, [{
+        key: 'handleInput',
+        value: function handleInput(event) {
+            this.props.setSource(null, event.target.value);
+        }
+    }, {
         key: 'render',
         value: function render() {
             return _react2.default.createElement(
                 'div',
                 { className: 'input-group input-group-lg' },
                 _react2.default.createElement('input', { id: 'source', type: 'text', className: 'form-control', placeholder: 'I\'m at...',
-                    value: this.props.appState.source.name, onChange: this.props.sourceInput }),
+                    value: this.props.appState.source.name, onChange: this.handleInput }),
                 _react2.default.createElement(
                     'span',
                     { className: 'input-group-btn' },
@@ -99,23 +168,31 @@ var SourceInput = function (_Component2) {
     return SourceInput;
 }(_react.Component);
 
-var DestinationInput = function (_Component3) {
-    _inherits(DestinationInput, _Component3);
+var DestinationInput = function (_Component5) {
+    _inherits(DestinationInput, _Component5);
 
     function DestinationInput() {
         _classCallCheck(this, DestinationInput);
 
-        return _possibleConstructorReturn(this, Object.getPrototypeOf(DestinationInput).apply(this, arguments));
+        var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(DestinationInput).call(this));
+
+        _this5.handleInput = _this5.handleInput.bind(_this5);
+        return _this5;
     }
 
     _createClass(DestinationInput, [{
+        key: 'handleInput',
+        value: function handleInput(event) {
+            this.props.setDestination(null, event.target.value);
+        }
+    }, {
         key: 'render',
         value: function render() {
             return _react2.default.createElement(
                 'div',
                 { className: 'input-group input-group-lg' },
                 _react2.default.createElement('input', { id: 'destination', type: 'text', className: 'form-control', placeholder: 'I want to go to...',
-                    value: this.props.appState.destination.name, onChange: this.props.destinationInput }),
+                    value: this.props.appState.destination.name, onChange: this.handleInput }),
                 _react2.default.createElement(
                     'span',
                     { className: 'input-group-btn' },
@@ -132,8 +209,8 @@ var DestinationInput = function (_Component3) {
     return DestinationInput;
 }(_react.Component);
 
-var UserInput = function (_Component4) {
-    _inherits(UserInput, _Component4);
+var UserInput = function (_Component6) {
+    _inherits(UserInput, _Component6);
 
     function UserInput() {
         _classCallCheck(this, UserInput);
@@ -158,7 +235,8 @@ var UserInput = function (_Component4) {
                     _react2.default.createElement(
                         'div',
                         { className: 'col-xs-12 col-sm-6' },
-                        _react2.default.createElement(SourceInput, this.props)
+                        _react2.default.createElement(SourceInput, this.props),
+                        _react2.default.createElement(SuggestionsList, { suggestions: this.props.appState.sourceSug, setSuggestion: this.props.setSource })
                     ),
                     _react2.default.createElement(
                         'div',
@@ -168,7 +246,8 @@ var UserInput = function (_Component4) {
                     _react2.default.createElement(
                         'div',
                         { className: 'col-xs-12 col-sm-6' },
-                        _react2.default.createElement(DestinationInput, this.props)
+                        _react2.default.createElement(DestinationInput, this.props),
+                        _react2.default.createElement(SuggestionsList, { suggestions: this.props.appState.destinationSug, setSuggestion: this.props.setDestination })
                     )
                 )
             );
@@ -178,15 +257,15 @@ var UserInput = function (_Component4) {
     return UserInput;
 }(_react.Component);
 
-var App = function (_Component5) {
-    _inherits(App, _Component5);
+var App = function (_Component7) {
+    _inherits(App, _Component7);
 
     function App() {
         _classCallCheck(this, App);
 
-        var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this));
+        var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this));
 
-        _this5.state = {
+        _this7.state = {
             userLat: null,
             userLon: null,
 
@@ -196,15 +275,20 @@ var App = function (_Component5) {
             destination: { id: null, name: '' },
             destinationSug: [],
 
+            locations: router.getAllPlaces(),
             error: null,
             warning: null
         };
-        _this5.setUserLoc = _this5.setUserLoc.bind(_this5);
-        _this5.setError = _this5.setError.bind(_this5);
-        _this5.findRoutes = _this5.findRoutes.bind(_this5);
-        _this5.sourceInput = _this5.sourceInput.bind(_this5);
-        _this5.destinationInput = _this5.destinationInput.bind(_this5);
-        return _this5;
+
+        _this7.setUserLoc = _this7.setUserLoc.bind(_this7);
+        _this7.setError = _this7.setError.bind(_this7);
+        _this7.findRoutes = _this7.findRoutes.bind(_this7);
+
+        _this7.setSource = _this7.setSource.bind(_this7);
+        _this7.setDestination = _this7.setDestination.bind(_this7);
+
+        _this7.filterSuggestions = _this7.filterSuggestions.bind(_this7);
+        return _this7;
     }
 
     _createClass(App, [{
@@ -219,9 +303,7 @@ var App = function (_Component5) {
 
             var nearest = router.getNearestPlace(userLat, userLon);
             if (nearest) {
-                this.setState({
-                    source: { id: nearest.id, name: nearest.name }
-                });
+                this.setSource(nearest.id, nearest.name);
 
                 if (nearest.distance > 1000) {
                     this.setState({
@@ -231,14 +313,31 @@ var App = function (_Component5) {
             }
         }
     }, {
-        key: 'sourceInput',
-        value: function sourceInput(event) {
-            this.setState({ source: { id: null, name: event.target.value } });
+        key: 'setSource',
+        value: function setSource(id, name) {
+            this.setState({
+                source: { id: id, name: name },
+                sourceSug: id ? [] : this.filterSuggestions(name)
+            });
         }
     }, {
-        key: 'destinationInput',
-        value: function destinationInput(event) {
-            this.setState({ destination: { id: null, name: event.target.value } });
+        key: 'setDestination',
+        value: function setDestination(id, name) {
+            this.setState({
+                destination: { id: id, name: name },
+                destinationSug: id ? [] : this.filterSuggestions(name)
+            });
+        }
+    }, {
+        key: 'filterSuggestions',
+        value: function filterSuggestions(term) {
+            if (term.length > 0) {
+                var regexp = new RegExp(term, 'i');
+                return this.state.locations.filter(function (elem) {
+                    return regexp.test(elem.name);
+                }).slice(0, 4);
+            }
+            return [];
         }
     }, {
         key: 'findRoutes',
@@ -255,8 +354,8 @@ var App = function (_Component5) {
                     appState: this.state,
                     setUserLoc: this.setUserLoc,
                     setError: this.setError,
-                    sourceInput: this.sourceInput,
-                    destinationInput: this.destinationInput,
+                    setSource: this.setSource,
+                    setDestination: this.setDestination,
                     findRoutes: this.findRoutes }),
                 _react2.default.createElement(
                     'p',
@@ -273,18 +372,6 @@ var App = function (_Component5) {
                     'p',
                     null,
                     this.state.warning
-                ),
-                _react2.default.createElement(
-                    'p',
-                    null,
-                    'Lat: ',
-                    this.state.userLat
-                ),
-                _react2.default.createElement(
-                    'p',
-                    null,
-                    'Lon: ',
-                    this.state.userLon
                 )
             );
         }
@@ -2620,7 +2707,7 @@ Router.prototype.getRouteDetails = function (id) {
 Router.prototype.getAllPlaces = function () {
 	var places = [];
 	for (var p in this.buses.places) {
-		places.push({ value: this.buses.places[p].name, data: p });
+		places.push({ id: p, name: this.buses.places[p].name });
 	}
 	return places;
 };
