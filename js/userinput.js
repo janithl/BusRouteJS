@@ -56,8 +56,8 @@ class SuggestionsList extends Component {
             var _props = this.props;
             return (
                 <div className="list-group text-left">
-                    {this.props.suggestions.map(function(sug) {
-                        return <Suggestion suggestion={sug} setSuggestion={_props.setSuggestion}/>;
+                    {this.props.suggestions.map(function(sug, index) {
+                        return <Suggestion key={index} suggestion={sug} setSuggestion={_props.setSuggestion}/>;
                     })}
                 </div>
             );

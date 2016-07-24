@@ -167,10 +167,10 @@ var App = function (_Component2) {
                     this.setError("Source and destination same");
                 } else {
                     var routes = router.findRoutes(this.state.source.id, this.state.destination.id);
-                    if (routes.length > 0) {
+                    if (routes && routes.length > 0) {
                         this.setState({ routes: routes, error: null });
                     } else {
-                        this.setError("Sorry! No buses were found.");
+                        this.setState({ routes: [], error: "Sorry! No buses were found." });
                     }
                 }
             } else {
@@ -202,23 +202,6 @@ var App = function (_Component2) {
 
 _reactDom2.default.render(_react2.default.createElement(App, null), document.getElementById('app'));
 
-// var map, source, destination, router = new Router();
-
-// function findRoutes(from, to) {
-//     var buses = router.findRoutes(from, to);
-
-//     if(buses) {
-//         document.getElementById('output').innerHTML = buses.map(function(b, index) {
-//             return renderOption(b, index);
-//         }).join('\n');
-//     }
-//     else {
-//         document.getElementById('output').innerHTML = '<div class="panel panel-danger">' +
-//         '<div class="panel-heading"><h3 class="panel-title">No Buses</h3></div>' +
-//         '<div class="panel-body"><p>Sorry, no buses were found</p></div></div>';
-//     }
-// }
-
 // /** load locations into hash */
 // function loadHash() {
 //     if(source && destination) {
@@ -246,93 +229,6 @@ _reactDom2.default.render(_react2.default.createElement(App, null), document.get
 
 // window.onhashchange = handleHashchange;
 
-// function renderOption(route, index) {
-//     var output;
-//     if(route.changes.length == 0) {
-//         output = '<div class="col-xs-12">' + 
-//             renderRoute(route.from, route.to, route.distance, route.routes[0].routes) + '</div>';
-//     }
-//     else if(route.changes.length == 1) {
-//         output = '<div class="col-xs-6">' + 
-//             renderRoute(route.from, route.changes[0], route.routes[0].distance, route.routes[0].routes) + 
-//         '</div><div class="col-xs-6">' +
-//             renderRoute(route.changes[0], route.to, route.routes[1].distance, route.routes[1].routes) + 
-//         '</div>';
-//     }
-//     else if(route.changes.length == 2) {
-//         output = '<div class="col-xs-4">' + 
-//             renderRoute(route.from, route.changes[0], route.routes[0].distance, route.routes[0].routes) + 
-//         '</div><div class="col-xs-4">' +
-//             renderRoute(route.changes[0], route.changes[1], route.routes[1].distance, route.routes[1].routes) +
-//         '</div><div class="col-xs-4">' +
-//             renderRoute(route.changes[1], route.to, route.routes[2].distance, route.routes[2].routes) + 
-//         '</div>';
-//     }
-
-//     if(index == 0) {
-//         output = '<div class="panel panel-warning"><div class="panel-heading"><h3 class="panel-title">' + 
-//         '<span class="glyphicon glyphicon-star"></span> Recommended Route</h3></div><div class="panel-body row">' + 
-//         output;
-//     }
-//     else {
-//         output = '<div class="panel panel-default"><div class="panel-body row">' + output;
-//     }
-
-//     return output + '</div><div class="panel-footer text-center">Total Distance: <strong>' + 
-//         (route.distance / 1000.0).toFixed(2) + 'km </strong></div></div>';
-// }
-
-// function renderRoute(from, to, distance, buses) {
-//     var from    = router.getPlaceDetails(from);
-//     var to      = router.getPlaceDetails(to);
-
-//     var details;
-//     var busmarkup = buses.map(function(r) {
-//         details = router.getRouteDetails(r);
-//         if(details) {
-//             return '<a class="list-group-item"><strong>#' + details.routeno +
-//                     '</strong> (' + details.from + ' - ' + details.to + ')</a>';
-//         }
-//     }).join('\n');
-
-//     return '<div class="panel panel-primary">' + 
-//         '<div class="panel-heading"><h3 class="panel-title">' + 
-//         '<a href="#" data-lat="' + from.lat + '" data-lon="' + from.lon + '" data-toggle="modal" data-target="#map-modal">' + 
-//         from.name + '</a> to <a href="#" data-lat="' + to.lat + '" data-lon="' + to.lon + '" data-toggle="modal" data-target="#map-modal">' + 
-//         to.name + '</a> (' + (distance / 1000.0).toFixed(2) + 'km)</h3></div>' + 
-//         '<div class="list-group">' + busmarkup + '</div></div>';
-// }
-
-// /** geolocate code from MDN: https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation */
-// function geolocate() {
-//     if (!navigator.geolocation) {
-//         $('#walk-warning').text('Sorry! Your browser does not support Geolocation.').removeClass('hide');
-//         return;
-//     }
-
-//     navigator.geolocation.getCurrentPosition(function(position) {
-//         /** on success */
-//         var nearest = router.getNearestPlace(position.coords.latitude, position.coords.longitude);
-//         if(nearest) {
-//             $('#source').val(nearest.name);
-//             source = nearest.id;
-
-//             if(nearest.distance < 1000) {
-//                 $('#walk-warning').addClass('hide');
-//             }
-//             else {
-//                 $('#walk-warning').text('You might have to walk ' + 
-//                     (nearest.distance / 1000.0).toFixed(2) + 'km').removeClass('hide');
-//             }
-//         }
-//         else {
-//             $('#walk-warning').text('Sorry! No bus stops found nearby.').removeClass('hide');
-//         }
-//     }, function() {
-//         /** on error */
-//         $('#walk-warning').text('Sorry! There was an error in getting your location.').removeClass('hide');
-//     });
-// }
 
 // /** load autocomplete on document.ready, and handle hash if present */
 // $(function() {
@@ -355,27 +251,27 @@ _reactDom2.default.render(_react2.default.createElement(App, null), document.get
 //     });
 // });
 
-// /** Google Map code stolen off http://stackoverflow.com/a/26410438 */
-// function initMap(myCenter) {
-//     var marker = new google.maps.Marker({
-//         position: myCenter
-//     });
+/** Google Map code stolen off http://stackoverflow.com/a/26410438 */
+function initMap(myCenter) {
+    var marker = new google.maps.Marker({
+        position: myCenter
+    });
 
-//     var mapProp = {
-//         center: myCenter,
-//         zoom: 16,
-//         mapTypeId: google.maps.MapTypeId.ROADMAP
-//     };
+    var mapProp = {
+        center: myCenter,
+        zoom: 16,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
 
-//     map = new google.maps.Map(document.getElementById('map-canvas'), mapProp);
-//     marker.setMap(map);
-// };
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapProp);
+    marker.setMap(map);
+};
 
-// $('#map-modal').on('shown.bs.modal', function(e) {
-//     var element = $(e.relatedTarget);
-//     initMap(new google.maps.LatLng(element.data('lat'), element.data('lon')));
-//     $('#map-title').html(element.html());
-// });
+$('#map-modal').on('shown.bs.modal', function (e) {
+    var element = $(e.relatedTarget);
+    initMap(new google.maps.LatLng(element.data('lat'), element.data('lon')));
+    $('#map-title').html(element.html());
+});
 
 },{"./displayroutes":3,"./router":4,"./userinput":5,"react":175,"react-dom":6}],2:[function(require,module,exports){
 "use strict";
@@ -2344,16 +2240,16 @@ var RenderRoute = function (_Component) {
     _createClass(RenderRoute, [{
         key: 'render',
         value: function render() {
-            var from = this.props.router.getPlaceDetails(this.props.route.from);
-            var to = this.props.router.getPlaceDetails(this.props.route.to);
+            var from = this.props.router.getPlaceDetails(this.props.from);
+            var to = this.props.router.getPlaceDetails(this.props.to);
 
             var details,
-                busmarkup = this.props.route.routes.map(function (r) {
+                busmarkup = this.props.route.routes.map(function (r, index) {
                 details = this.props.router.getRouteDetails(r);
                 if (details) {
                     return _react2.default.createElement(
                         'a',
-                        { className: 'list-group-item' },
+                        { key: index, className: 'list-group-item' },
                         _react2.default.createElement(
                             'strong',
                             null,
@@ -2399,7 +2295,7 @@ var RenderRoute = function (_Component) {
                     ),
                     _react2.default.createElement(
                         'div',
-                        { 'class': 'list-group' },
+                        { className: 'list-group' },
                         busmarkup
                     )
                 );
@@ -2425,6 +2321,7 @@ var RenderOption = function (_Component2) {
         key: 'render',
         value: function render() {
             var cssclass = this.props.first ? 'panel panel-warning' : 'panel panel-default';
+
             var recommended = _react2.default.createElement('div', null);
             if (this.props.first) {
                 recommended = _react2.default.createElement(
@@ -2433,22 +2330,89 @@ var RenderOption = function (_Component2) {
                     _react2.default.createElement(
                         'h3',
                         { className: 'panel-title' },
-                        _react2.default.createElement('span', { 'class': 'glyphicon glyphicon-star' }),
+                        _react2.default.createElement('span', { className: 'glyphicon glyphicon-star' }),
                         ' Recommended Route'
                     )
                 );
             }
+
+            var components = _react2.default.createElement('div', { className: 'panel-body row' });
+            if (this.props.route.changes.length == 0) {
+                components = _react2.default.createElement(
+                    'div',
+                    { className: 'panel-body row' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-xs-6' },
+                        _react2.default.createElement(RenderRoute, {
+                            route: this.props.route.routes[0],
+                            from: this.props.route.from,
+                            to: this.props.route.to,
+                            router: this.props.router })
+                    )
+                );
+            } else if (this.props.route.changes.length == 1) {
+                components = _react2.default.createElement(
+                    'div',
+                    { className: 'panel-body row' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-xs-6' },
+                        _react2.default.createElement(RenderRoute, {
+                            route: this.props.route.routes[0],
+                            from: this.props.route.from,
+                            to: this.props.route.changes[0],
+                            router: this.props.router })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-xs-6' },
+                        _react2.default.createElement(RenderRoute, {
+                            route: this.props.route.routes[1],
+                            from: this.props.route.changes[0],
+                            to: this.props.route.to,
+                            router: this.props.router })
+                    )
+                );
+            } else if (this.props.route.changes.length == 2) {
+                components = _react2.default.createElement(
+                    'div',
+                    { className: 'panel-body row' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-xs-4' },
+                        _react2.default.createElement(RenderRoute, {
+                            route: this.props.route.routes[0],
+                            from: this.props.route.from,
+                            to: this.props.route.changes[0],
+                            router: this.props.router })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-xs-4' },
+                        _react2.default.createElement(RenderRoute, {
+                            route: this.props.route.routes[1],
+                            from: this.props.route.changes[0],
+                            to: this.props.route.changes[1],
+                            router: this.props.router })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-xs-4' },
+                        _react2.default.createElement(RenderRoute, {
+                            route: this.props.route.routes[2],
+                            from: this.props.route.changes[1],
+                            to: this.props.route.to,
+                            router: this.props.router })
+                    )
+                );
+            }
+
             return _react2.default.createElement(
                 'div',
                 { className: cssclass },
                 recommended,
-                _react2.default.createElement(
-                    'div',
-                    { className: 'panel-body row' },
-                    this.props.route.routes.map(function (r, index) {
-                        return _react2.default.createElement(RenderRoute, { key: index, route: r, router: this.props.router });
-                    }.bind(this))
-                ),
+                components,
                 _react2.default.createElement(
                     'div',
                     { className: 'panel-footer text-center' },
@@ -2864,8 +2828,8 @@ var SuggestionsList = function (_Component3) {
                 return _react2.default.createElement(
                     'div',
                     { className: 'list-group text-left' },
-                    this.props.suggestions.map(function (sug) {
-                        return _react2.default.createElement(Suggestion, { suggestion: sug, setSuggestion: _props.setSuggestion });
+                    this.props.suggestions.map(function (sug, index) {
+                        return _react2.default.createElement(Suggestion, { key: index, suggestion: sug, setSuggestion: _props.setSuggestion });
                     })
                 );
             }
