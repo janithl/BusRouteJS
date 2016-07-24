@@ -50,7 +50,7 @@ class RenderOption extends Component {
         var components = <div className="panel-body row"/>;
         if(this.props.route.changes.length == 0) {
             components = <div className="panel-body row">
-                <div className="col-xs-6">
+                <div className="col-xs-12">
                     <RenderRoute 
                         route={this.props.route.routes[0]} 
                         from={this.props.route.from} 

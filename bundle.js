@@ -106,12 +106,39 @@ var App = function (_Component2) {
 
         _this2.setSource = _this2.setSource.bind(_this2);
         _this2.setDestination = _this2.setDestination.bind(_this2);
+        _this2.readHash = _this2.readHash.bind(_this2);
+        _this2.setHash = _this2.setHash.bind(_this2);
 
         _this2.filterSuggestions = _this2.filterSuggestions.bind(_this2);
+
+        setTimeout(_this2.readHash, 500);
         return _this2;
     }
 
     _createClass(App, [{
+        key: 'readHash',
+        value: function readHash() {
+            if (window.location.hash.length > 1) {
+                var hash = window.location.hash.substr(1).split('-');
+                if (hash.length == 2) {
+                    var from = router.getPlaceDetails(hash[0]);
+                    var to = router.getPlaceDetails(hash[1]);
+                    if (from && to) {
+                        this.setSource(hash[0], from.name);
+                        this.setDestination(hash[1], to.name);
+                        setTimeout(this.findRoutes, 500);
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'setHash',
+        value: function setHash() {
+            if (this.state.source.id && this.state.destination.id) {
+                window.location.hash = '#' + this.state.source.id + '-' + this.state.destination.id;
+            }
+        }
+    }, {
         key: 'setError',
         value: function setError(error) {
             this.setState({ error: error });
@@ -139,6 +166,9 @@ var App = function (_Component2) {
                 source: { id: id, name: name },
                 sourceSug: id ? [] : this.filterSuggestions(name)
             });
+            if (id) {
+                setTimeout(this.setHash, 500);
+            }
         }
     }, {
         key: 'setDestination',
@@ -147,6 +177,9 @@ var App = function (_Component2) {
                 destination: { id: id, name: name },
                 destinationSug: id ? [] : this.filterSuggestions(name)
             });
+            if (id) {
+                setTimeout(this.setHash, 500);
+            }
         }
     }, {
         key: 'filterSuggestions',
@@ -2343,7 +2376,7 @@ var RenderOption = function (_Component2) {
                     { className: 'panel-body row' },
                     _react2.default.createElement(
                         'div',
-                        { className: 'col-xs-6' },
+                        { className: 'col-xs-12' },
                         _react2.default.createElement(RenderRoute, {
                             route: this.props.route.routes[0],
                             from: this.props.route.from,

@@ -53,8 +53,33 @@ class App extends Component {
 
         this.setSource      = this.setSource.bind(this);
         this.setDestination = this.setDestination.bind(this);
+        this.readHash       = this.readHash.bind(this);
+        this.setHash        = this.setHash.bind(this);
 
         this.filterSuggestions  = this.filterSuggestions.bind(this);
+
+        setTimeout(this.readHash, 500);
+    }
+
+    readHash() {
+        if(window.location.hash.length > 1) {
+            var hash = window.location.hash.substr(1).split('-');
+            if(hash.length == 2) {
+                var from    = router.getPlaceDetails(hash[0]);
+                var to      = router.getPlaceDetails(hash[1]);
+                if(from && to) {
+                    this.setSource(hash[0], from.name);
+                    this.setDestination(hash[1], to.name);
+                    setTimeout(this.findRoutes, 500);
+                }
+            }
+        }
+    }
+
+    setHash() {
+        if(this.state.source.id && this.state.destination.id) {
+            window.location.hash = '#' + this.state.source.id + '-' + this.state.destination.id;
+        }
     }
 
     setError(error) {
@@ -81,6 +106,7 @@ class App extends Component {
             source: { id: id, name: name },
             sourceSug: id ? [] : this.filterSuggestions(name)
         });
+        if(id) { setTimeout(this.setHash, 500); }
     }
 
     setDestination(id, name) {
@@ -88,6 +114,7 @@ class App extends Component {
             destination: { id: id, name: name },
             destinationSug: id ? [] : this.filterSuggestions(name)
         });
+        if(id) { setTimeout(this.setHash, 500); }
     }
 
     filterSuggestions(term) {
