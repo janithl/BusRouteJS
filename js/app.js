@@ -126,6 +126,7 @@ class App extends Component {
     }
 
     findRoutes() {
+        this.setState({ routes: [] });
         if(this.state.source.id && this.state.destination.id) {
             if(this.state.source.id === this.state.destination.id) {
                 this.setError("Source and destination same");
@@ -136,12 +137,12 @@ class App extends Component {
                     this.setState({ routes: routes, error: null });
                 }
                 else {
-                    this.setState({ routes: [], error: "Sorry! No buses were found." });
+                    this.setError("Sorry! No buses were found.");
                 }
             }
         }
         else {
-            this.setState({ routes: [],  error: "You haven't entered where you are and/or where you want to go!" });
+            this.setError("You haven't entered where you are and/or where you want to go!");
         }
     }
 
