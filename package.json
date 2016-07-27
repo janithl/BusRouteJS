@@ -1,6 +1,6 @@
 {
   "name": "BusRouteJS",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "A JS rewrite of the original bus route finder",
   "repository": {
     "type": "git",
@@ -14,8 +14,6 @@
     "babel-preset-react": "^6.5.0",
     "babelify": "^7.2.0",
     "browserify": "^11.0.1",
-    "clipboard": "^1.5.10",
-    "lodash": "^4.11.1",
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
     "watchify": "^3.4.0"
