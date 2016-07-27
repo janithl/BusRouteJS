@@ -236,77 +236,6 @@ var App = function (_Component2) {
 
 _reactDom2.default.render(_react2.default.createElement(App, null), document.getElementById('app'));
 
-// /** load locations into hash */
-// function loadHash() {
-//     if(source && destination) {
-//         location.hash = source + '-' + destination;
-//     }
-// }
-
-// /** see if locations are stored in the hash */
-// function handleHashchange() {
-//     if(location.hash.length > 1) {
-//         var hash    = location.hash.substr(1).split('-');
-//         var from    = router.getPlaceDetails(hash[0]);
-//         var to      = router.getPlaceDetails(hash[1]);
-//         if(from && to) {
-//             $('#source').val(from.name);
-//             $('#destination').val(to.name);
-
-//             source      = hash[0];
-//             destination = hash[1];
-
-//             findRoutes(hash[0], hash[1]);
-//         }
-//     }
-// }
-
-// window.onhashchange = handleHashchange;
-
-
-// /** load autocomplete on document.ready, and handle hash if present */
-// $(function() {
-//     handleHashchange();
-
-//     $('#source').autocomplete({
-//         lookup: router.getAllPlaces(),
-//         onSelect: function (suggestion) {
-//             source = suggestion.data;
-//             loadHash();
-//         }
-//     });
-
-//     $('#destination').autocomplete({
-//         lookup: router.getAllPlaces(),
-//         onSelect: function (suggestion) {
-//             destination = suggestion.data;
-//             loadHash();
-//         }
-//     });
-// });
-
-/** Google Map code stolen off http://stackoverflow.com/a/26410438 */
-function initMap(myCenter) {
-    var marker = new google.maps.Marker({
-        position: myCenter
-    });
-
-    var mapProp = {
-        center: myCenter,
-        zoom: 16,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-
-    var map = new google.maps.Map(document.getElementById('map-canvas'), mapProp);
-    marker.setMap(map);
-};
-
-$('#map-modal').on('shown.bs.modal', function (e) {
-    var element = $(e.relatedTarget);
-    initMap(new google.maps.LatLng(element.data('lat'), element.data('lon')));
-    $('#map-title').html(element.html());
-});
-
 },{"./displayroutes":3,"./router":4,"./userinput":5,"react":175,"react-dom":6}],2:[function(require,module,exports){
 "use strict";
 
@@ -2262,8 +2191,57 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var RenderRoute = function (_Component) {
-    _inherits(RenderRoute, _Component);
+var MapLink = function (_Component) {
+    _inherits(MapLink, _Component);
+
+    function MapLink() {
+        _classCallCheck(this, MapLink);
+
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MapLink).call(this));
+
+        _this.renderMap = _this.renderMap.bind(_this);
+        return _this;
+    }
+
+    _createClass(MapLink, [{
+        key: 'renderMap',
+        value: function renderMap() {
+            $('#map-canvas').html(null);
+            $('#map-title').html(this.props.link.name);
+
+            setTimeout(function () {
+                /** Google Map code stolen off http://stackoverflow.com/a/26410438 */
+                var centre = new google.maps.LatLng(this.props.link.lat, this.props.link.lon);
+                var marker = new google.maps.Marker({
+                    position: centre
+                });
+
+                var mapProp = {
+                    center: centre,
+                    zoom: 16,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+
+                var map = new google.maps.Map(document.getElementById('map-canvas'), mapProp);
+                marker.setMap(map);
+            }.bind(this), 200);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'a',
+                { onClick: this.renderMap, 'data-toggle': 'modal', 'data-target': '#map-modal' },
+                this.props.link.name
+            );
+        }
+    }]);
+
+    return MapLink;
+}(_react.Component);
+
+var RenderRoute = function (_Component2) {
+    _inherits(RenderRoute, _Component2);
 
     function RenderRoute() {
         _classCallCheck(this, RenderRoute);
@@ -2309,19 +2287,9 @@ var RenderRoute = function (_Component) {
                         _react2.default.createElement(
                             'h3',
                             { className: 'panel-title' },
-                            _react2.default.createElement(
-                                'a',
-                                { 'data-lat': from.lat, 'data-lon': from.lon, 'data-toggle': 'modal',
-                                    'data-target': '#map-modal' },
-                                from.name
-                            ),
+                            _react2.default.createElement(MapLink, { link: from }),
                             ' to ',
-                            _react2.default.createElement(
-                                'a',
-                                { 'data-lat': to.lat, 'data-lon': to.lon,
-                                    'data-toggle': 'modal', 'data-target': '#map-modal' },
-                                to.name
-                            ),
+                            _react2.default.createElement(MapLink, { link: to }),
                             ' (',
                             (this.props.route.distance / 1000.0).toFixed(2),
                             ' km)'
@@ -2342,8 +2310,8 @@ var RenderRoute = function (_Component) {
     return RenderRoute;
 }(_react.Component);
 
-var RenderOption = function (_Component2) {
-    _inherits(RenderOption, _Component2);
+var RenderOption = function (_Component3) {
+    _inherits(RenderOption, _Component3);
 
     function RenderOption() {
         _classCallCheck(this, RenderOption);
@@ -2465,8 +2433,8 @@ var RenderOption = function (_Component2) {
     return RenderOption;
 }(_react.Component);
 
-var DisplayRoutes = function (_Component3) {
-    _inherits(DisplayRoutes, _Component3);
+var DisplayRoutes = function (_Component4) {
+    _inherits(DisplayRoutes, _Component4);
 
     function DisplayRoutes() {
         _classCallCheck(this, DisplayRoutes);
@@ -23355,7 +23323,7 @@ function drainQueue() {
     if (draining) {
         return;
     }
-    var timeout = cachedSetTimeout(cleanUpNextTick);
+    var timeout = cachedSetTimeout.call(null, cleanUpNextTick);
     draining = true;
 
     var len = queue.length;
@@ -23372,7 +23340,7 @@ function drainQueue() {
     }
     currentQueue = null;
     draining = false;
-    cachedClearTimeout(timeout);
+    cachedClearTimeout.call(null, timeout);
 }
 
 process.nextTick = function (fun) {
@@ -23384,7 +23352,7 @@ process.nextTick = function (fun) {
     }
     queue.push(new Item(fun, args));
     if (queue.length === 1 && !draining) {
-        cachedSetTimeout(drainQueue, 0);
+        cachedSetTimeout.call(null, drainQueue, 0);
     }
 };
 

@@ -2,6 +2,41 @@
 
 import React, { Component } from 'react';
 
+class MapLink extends Component {
+    constructor() {
+        super();
+        this.renderMap = this.renderMap.bind(this);
+    }
+
+    renderMap() {
+        $('#map-canvas').html(null);
+        $('#map-title').html(this.props.link.name);
+
+        setTimeout(function() {
+            /** Google Map code stolen off http://stackoverflow.com/a/26410438 */
+            var centre = new google.maps.LatLng(this.props.link.lat, this.props.link.lon);
+            var marker = new google.maps.Marker({
+                position: centre
+            });
+
+            var mapProp = {
+                center: centre,
+                zoom: 16,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            var map = new google.maps.Map(document.getElementById('map-canvas'), mapProp);
+            marker.setMap(map);
+        }.bind(this), 200);
+    }
+
+    render() {
+        return(
+            <a onClick={this.renderMap} data-toggle="modal" data-target="#map-modal">{this.props.link.name}</a>
+        );
+    }
+}
+
 class RenderRoute extends Component {
     render() {
         var from    = this.props.router.getPlaceDetails(this.props.from);
@@ -19,9 +54,7 @@ class RenderRoute extends Component {
                 <div className="panel panel-primary">
                     <div className="panel-heading">
                     <h3 className="panel-title">
-                        <a data-lat={from.lat} data-lon={from.lon} data-toggle="modal" 
-                        data-target="#map-modal">{from.name}</a> to <a data-lat={to.lat} data-lon={to.lon} 
-                        data-toggle="modal" data-target="#map-modal">{to.name}</a> ({(this.props.route.distance / 1000.0).toFixed(2)} km)
+                        <MapLink link={from}/> to <MapLink link={to}/> ({(this.props.route.distance / 1000.0).toFixed(2)} km)
                     </h3>
                     </div>
                     <div className="list-group">{busmarkup}</div>
