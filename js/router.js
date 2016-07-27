@@ -59,7 +59,7 @@ Router.prototype.findReachableStops = function(route, stop) {
 	this.buses.routes[route].stopsto.hasOwnProperty(stop)) {
 		var startdist = this.buses.routes[route].stopsto[stop];
 		for(var s in this.buses.routes[route].stopsto) {
-			if(this.buses.routes[route].stopsto[s] > startdist) {
+			if(this.buses.routes[route].stopsto[s] < startdist) {
 				stops.push(s);
 			}
 		}
