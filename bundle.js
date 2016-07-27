@@ -1332,25 +1332,25 @@ var Buses = {
 			"from": "Narahenpita",
 			"to": "Wellawatte",
 			"stopsfrom": {
-				"10": 4121,
-				"41": 1755,
-				"86": 3489,
-				"87": 3098,
-				"88": 721,
+				"90": 0,
 				"89": 297,
-				"90": 0
+				"88": 721,
+				"41": 1755,
+				"87": 3098,
+				"86": 3489,
+				"10": 4121
 			},
 			"stopsto": {
 				"10": 0,
-				"40": 10106,
-				"41": 9496,
-				"84": 9009,
-				"85": 7592,
-				"86": 6914,
-				"87": 6523,
-				"88": 4145,
-				"89": 3721,
-				"90": 12472
+				"86": 804,
+				"87": 1169,
+				"85": 1451,
+				"40": 1685,
+				"41": 2219,
+				"84": 2809,
+				"88": 3212,
+				"89": 3620,
+				"90": 3864
 			}
 		},
 		"16": {
@@ -2531,7 +2531,7 @@ Router.prototype.findReachableStops = function (route, stop) {
 	if (this.buses.routes.hasOwnProperty(route) && this.buses.routes[route].stopsto.hasOwnProperty(stop)) {
 		var startdist = this.buses.routes[route].stopsto[stop];
 		for (var s in this.buses.routes[route].stopsto) {
-			if (this.buses.routes[route].stopsto[s] > startdist) {
+			if (this.buses.routes[route].stopsto[s] < startdist) {
 				stops.push(s);
 			}
 		}
@@ -23323,7 +23323,7 @@ function drainQueue() {
     if (draining) {
         return;
     }
-    var timeout = cachedSetTimeout.call(null, cleanUpNextTick);
+    var timeout = cachedSetTimeout(cleanUpNextTick);
     draining = true;
 
     var len = queue.length;
@@ -23340,7 +23340,7 @@ function drainQueue() {
     }
     currentQueue = null;
     draining = false;
-    cachedClearTimeout.call(null, timeout);
+    cachedClearTimeout(timeout);
 }
 
 process.nextTick = function (fun) {
@@ -23352,7 +23352,7 @@ process.nextTick = function (fun) {
     }
     queue.push(new Item(fun, args));
     if (queue.length === 1 && !draining) {
-        cachedSetTimeout.call(null, drainQueue, 0);
+        cachedSetTimeout(drainQueue, 0);
     }
 };
 
