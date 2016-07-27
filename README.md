@@ -12,6 +12,11 @@ Demo
 [There's a demo here](http://janithl.github.io/BusRouteJS/). You 
 have to turn on touch event emulation on Chrome to access the modal screens.
 
+Install
+-------
+
+Clone the repo and run `npm install`.
+
 API
 ---
 
