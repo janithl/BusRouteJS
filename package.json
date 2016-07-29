@@ -21,10 +21,18 @@
   },
   "scripts": {
     "build": "browserify js/app.js -t babelify -t browserify-shim | uglifyjs > bundle.js",
-    "start": "watchify js/app.js -v -t babelify -t browserify-shim -o bundle.js"
+    "start": "watchify js/app.js -v -t babelify -t browserify-shim -o bundle.js",
+    "test": "jest"
+  },
+  "jest": {
+    "testRegex": "js/tests/.*\\.js$"
   },
   "browserify-shim": {
     "react": "global:React",
     "react-dom": "global:ReactDOM"
+  },
+  "devDependencies": {
+    "babel-jest": "^14.0.0",
+    "babel-polyfill": "^6.9.1"
   }
 }

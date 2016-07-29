@@ -59,7 +59,7 @@ Router.prototype.findReachableStops = function(route, stop) {
 	this.buses.routes[route].stopsto.hasOwnProperty(stop)) {
 		var startdist = this.buses.routes[route].stopsto[stop];
 		for(var s in this.buses.routes[route].stopsto) {
-			if(this.buses.routes[route].stopsto[s] < startdist) {
+			if(this.buses.routes[route].stopsto[s] > startdist) {
 				stops.push(s);
 			}
 		}
@@ -92,7 +92,7 @@ Router.prototype.findSingleRoutes = function(from, to) {
 };
 
 /** find routes between two nodes */
-Router.prototype.findRoutes = function(from, to) {
+Router.prototype.findRoutes = function(from, to, limit = 5) {
 	var fromRoutes 	= this.findStopRoutes(from); /** bus routes passing through start node */
 	var toRoutes 	= this.findStopRoutes(to); /** bus routes passing through end node */
 
@@ -199,7 +199,7 @@ Router.prototype.findRoutes = function(from, to) {
 			}).sort(function(a, b) {
 				return (a.routes.length - b.routes.length) * _self.penalty + (a.distance - b.distance);
 			});
-			return multiRoutes.slice(0, 5);
+			return multiRoutes.slice(0, limit);
 		}
 	}
 };
