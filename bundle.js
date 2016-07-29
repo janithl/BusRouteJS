@@ -2479,7 +2479,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var Router = function Router() {
 	this.buses = _buses2.default;
-	this.penalty = 1000; /** 1km penalty for changing buses */
+	this.penalty = 5000; /** 5km penalty for changing buses */
 };
 
 /** stolen off http://stackoverflow.com/a/14438954 */

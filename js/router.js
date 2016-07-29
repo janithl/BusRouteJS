@@ -2,7 +2,7 @@ import Buses from './buses';
 
 var Router = function () {
     this.buses 		= Buses;
-    this.penalty 	= 1000; /** 1km penalty for changing buses */ 
+    this.penalty 	= 5000; /** 5km penalty for changing buses */ 
 };
 
 /** stolen off http://stackoverflow.com/a/14438954 */
